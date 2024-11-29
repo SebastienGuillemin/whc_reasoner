@@ -26,7 +26,6 @@ then
     cd ..
 
     mvn clean install
-
     for filename in ./evaluation/dataset/*; do
         echo Processing $filename
         mvn exec:java -Dexec.mainClass="com.sebastienguillemin.whcreasoner.core.ConstructKB" -Dexec.args="$filename"
@@ -35,15 +34,13 @@ elif [[ "$1" = "eval" ]]
 then
     print_big_message "Running evaluation"
     
-    cd core
-    mvn clean install
+    mvn clean install -f core/pom.xml
     for filename in ./evaluation/KB/*; do
         for i in $(seq 1 10); do
             echo Processing $filename
-            mvn exec:java -Dexec.mainClass="com.sebastienguillemin.whcreasoner.core.Eval" -Dexec.args="$filename"
+            mvn exec:java -Dexec.mainClass="com.sebastienguillemin.whcreasoner.core.Eval" -Dexec.args="$filename" -f core/pom.xml
         done
     done
-    cd ..
 elif [[ "$1" = "swrl-eval" ]]
 then
     print_big_message "Running evaluation for SWRL"

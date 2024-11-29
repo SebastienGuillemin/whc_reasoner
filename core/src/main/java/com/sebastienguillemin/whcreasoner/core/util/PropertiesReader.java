@@ -69,7 +69,7 @@ public class PropertiesReader {
     private void loadProperties() throws IOException {
         Logger.logInfo("Loading properties.");
         
-        try (InputStream in = new FileInputStream(new File("properties.yml"))) {
+        try (InputStream in = new FileInputStream(new File(System.getProperty("user.dir") + "/core/properties.yml"))) {
             Yaml yaml = new Yaml();
             this.properties = yaml.load(in);
         }

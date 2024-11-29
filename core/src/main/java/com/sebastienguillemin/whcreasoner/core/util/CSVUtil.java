@@ -128,7 +128,7 @@ public class CSVUtil {
         
         try (PrintWriter pw = new PrintWriter(new FileWriter(file, true))) {
             if (!exists)
-                pw.println("KB,Inferring time (ms), Adding atoms (ms), Inferred axioms");
+                pw.println("KB,Inferring time (ms), Adding atoms (ms), Inferred axioms, WHC_1, WHC_2, WHC_3");
 
             pw.println(row);
             pw.close();

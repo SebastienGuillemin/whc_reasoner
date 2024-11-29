@@ -3,6 +3,7 @@ package com.sebastienguillemin.whcreasoner.core;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
 
@@ -40,6 +41,10 @@ public class Example {
 
         String results = inferredAxioms.size() + " axioms inferred:\n";
         results += "-> In : " + ((stop - start) / 1000l) + " second(s)";
+
+        for(Entry<IRI, Integer> entry : reasoner.getInferredAxiomsPerRule().entrySet()) {
+            System.out.println("Axioms inferred for rule " + entry.getKey() + " : " + entry.getValue());
+        }
 
         Logger.log(results);
 

@@ -1,8 +1,10 @@
 package com.sebastienguillemin.whcreasoner.core;
 
+import java.util.Hashtable;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
 
@@ -17,6 +19,9 @@ import com.sebastienguillemin.whcreasoner.core.util.PropertiesReader;
 
 public class Eval {
     private static PropertiesReader propertiesReader = PropertiesReader.getInstance();
+    private static IRI WHC_1_IRI = IRI.create("http://www.sebastienguillemin.com/dogs#whc_1");
+    private static IRI WHC_2_IRI = IRI.create("http://www.sebastienguillemin.com/dogs#whc_2");
+    private static IRI WHC_3_IRI = IRI.create("http://www.sebastienguillemin.com/dogs#whc_3");
 
     public static void main(String[] args) throws Exception {
         String KB = args[0];
@@ -44,7 +49,12 @@ public class Eval {
 
         System.out.println();
 
-        CSVUtil.addToCSV("whc_result.csv", KB + ", " + (stop - start) + ", " + reasoner.addingInferredAxiomsTime + ", " + inferredAxioms.size());
+        Hashtable<IRI, Integer> inferredAxiomsPerRule = reasoner.getInferredAxiomsPerRule();
+
+        String row = KB + ", " + (stop - start) + ", " + reasoner.addingInferredAxiomsTime + ", " + inferredAxioms.size() + ", ";
+        row += inferredAxiomsPerRule.get(WHC_1_IRI) + ", " + inferredAxiomsPerRule.get(WHC_2_IRI) + ", " + inferredAxiomsPerRule.get(WHC_3_IRI);
+
+        CSVUtil.addToCSV("whc_result.csv",row);
 
         if (propertiesReader.getPropertyValueBoolean("KB.save"))
             ontologyWrapper.saveOntology(propertiesReader.getPropertyValue("KB.path"));

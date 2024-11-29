@@ -3,6 +3,7 @@ package com.sebastienguillemin.whcreasoner.core.reasoner;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
@@ -29,6 +30,7 @@ import com.sebastienguillemin.whcreasoner.core.exception.OWLAxiomConversionExcep
 import com.sebastienguillemin.whcreasoner.core.exception.VariableValueException;
 import com.sebastienguillemin.whcreasoner.core.util.Logger;
 
+import lombok.Getter;
 import me.tongfei.progressbar.ProgressBar;
 
 // TODO : l'affichage de la règle en train d'ête exécutée semble ne pas correspondre à celle qui l'est vraiment
@@ -37,6 +39,9 @@ public class Reasoner {
 
     private OntologyWrapper ontologyWrapper;
     private Set<Rule> rules;
+
+    @Getter
+    private Hashtable<IRI, Integer> inferredAxiomsPerRule;
     public long addingInferredAxiomsTime;
     /**
      * 
@@ -46,11 +51,13 @@ public class Reasoner {
     public Reasoner(OntologyWrapper OntologyWrapper) {
         this.ontologyWrapper = OntologyWrapper;
         this.rules = new HashSet<>();
+        this.inferredAxiomsPerRule = new Hashtable<>();
         this.addingInferredAxiomsTime = 0l;
     }
 
     public void addRule(Rule rule) {
         this.rules.add(rule);
+        this.inferredAxiomsPerRule.put(rule.getIRI(), 0);
     }
 
     public Set<OWLAxiom> triggerRules()
@@ -104,6 +111,8 @@ public class Reasoner {
                 }
             }
             Logger.logInfo(String.format("%s axioms inferred with rule '%s'.\n", inferredAxiomsForCurrentRule.size(), rule.getIRI().getFragment()));
+
+            this.inferredAxiomsPerRule.put(rule.getIRI(), this.inferredAxiomsPerRule.get(rule.getIRI()) + inferredAxiomsForCurrentRule.size());
 
             // Adding inferred axioms to ontology (done here to avoid proving hypotheses in next rule)
             long start = System.currentTimeMillis();
