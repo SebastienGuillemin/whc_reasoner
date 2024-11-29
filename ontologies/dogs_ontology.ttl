@@ -41,7 +41,7 @@
                                               rdf:rest [ rdf:type rdf:List ;
                                                          rdf:first "Low" ;
                                                          rdf:rest [ rdf:type rdf:List ;
-                                                                    rdf:first "Middle" ;
+                                                                    rdf:first "Moderate" ;
                                                                     rdf:rest rdf:nil
                                                                   ]
                                                        ]
