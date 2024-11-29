@@ -13,7 +13,9 @@ if [[ $# -eq 0 ]] || [[ "$1" = "core" ]]
 then
     print_big_message "Installing modules in .m2 repository and running the core example"
 
+    cd core
     mvn clean install exec:java -Dexec.mainClass="com.sebastienguillemin.whcreasoner.core.Example"
+    cd..
 elif [[ "$1" = "dataset" ]]
 then
     print_big_message "Creating dataset"
@@ -33,14 +35,15 @@ elif [[ "$1" = "eval" ]]
 then
     print_big_message "Running evaluation"
     
+    cd core
     mvn clean install
-
     for filename in ./evaluation/KB/*; do
         for i in $(seq 1 10); do
             echo Processing $filename
             mvn exec:java -Dexec.mainClass="com.sebastienguillemin.whcreasoner.core.Eval" -Dexec.args="$filename"
         done
     done
+    cd ..
 elif [[ "$1" = "swrl-eval" ]]
 then
     print_big_message "Running evaluation for SWRL"
