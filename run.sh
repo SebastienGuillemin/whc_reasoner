@@ -28,7 +28,7 @@ then
         echo Processing $filename
         mvn exec:java -Dexec.mainClass="com.sebastienguillemin.whcreasoner.core.ConstructKB" -Dexec.args="$filename" -f core/pom.xml
     done
-elif [[ "$1" = "eval_quanti" ]]
+elif [[ "$1" = "quantitative_evaluation" ]]
 then
     print_big_message "Running quantitative evaluation"
     
@@ -39,7 +39,7 @@ then
             mvn exec:java -Dexec.mainClass="com.sebastienguillemin.whcreasoner.core.Eval" -Dexec.args="$filename" -f core/pom.xml
         done
     done
-elif [[ "$1" = "eval_quali" ]]
+elif [[ "$1" = "qualitative_evaluation" ]]
 then
     print_big_message "Running qualitative evaluation"
 
@@ -52,7 +52,7 @@ then
         mvn exec:java -Dexec.mainClass="com.sebastienguillemin.whcreasoner.core.Eval" -Dexec.args="$kb save_inferred_axioms" -f core/pom.xml
     done
 
-elif [[ "$1" = "swrl-eval" ]]
+elif [[ "$1" = "swrl_evaluation" ]]
 then
     print_big_message "Running evaluation for SWRL"
     

@@ -66,7 +66,7 @@ public class CSVUtil {
         OWLDataProperty hasSizeProperty = new OWLDataPropertyImpl(IRI.create(baseIRI + "hasSize"));
         OWLDataProperty needsHoursOfExercicePerDayProperty = new OWLDataPropertyImpl(IRI.create(baseIRI + "needsHoursOfExercicePerDay"));
         OWLDataProperty hasIntelligenceRatingProperty = new OWLDataPropertyImpl(IRI.create(baseIRI + "hasIntelligenceRating"));
-        OWLDataProperty hashHealthIssuesRiskProperty = new OWLDataPropertyImpl(IRI.create(baseIRI + "hashHealthIssuesRisk"));
+        OWLDataProperty hasHealthIssuesRiskProperty = new OWLDataPropertyImpl(IRI.create(baseIRI + "hasHealthIssuesRisk"));
         OWLDataProperty hasAverageWeightProperty = new OWLDataPropertyImpl(IRI.create(baseIRI + "hasAverageWeight"));
         OWLDataProperty hasTrainingDifficultyProperty = new OWLDataPropertyImpl(IRI.create(baseIRI + "hasTrainingDifficulty"));
 
@@ -88,7 +88,7 @@ public class CSVUtil {
             ontology.add(new OWLDataPropertyAssertionAxiomImpl(individual, hasSizeProperty, new OWLLiteralImplString(record.get(6)), new HashSet<>()));
             ontology.add(new OWLDataPropertyAssertionAxiomImpl(individual, needsHoursOfExercicePerDayProperty, new OWLLiteralImplFloat(Float.parseFloat(record.get(7))), new HashSet<>()));
             ontology.add(new OWLDataPropertyAssertionAxiomImpl(individual, hasIntelligenceRatingProperty, new OWLLiteralImplInteger(Integer.parseInt(record.get(8))), new HashSet<>()));
-            ontology.add(new OWLDataPropertyAssertionAxiomImpl(individual, hashHealthIssuesRiskProperty, new OWLLiteralImplString(record.get(9)), new HashSet<>()));
+            ontology.add(new OWLDataPropertyAssertionAxiomImpl(individual, hasHealthIssuesRiskProperty, new OWLLiteralImplString(record.get(9)), new HashSet<>()));
             ontology.add(new OWLDataPropertyAssertionAxiomImpl(individual, hasAverageWeightProperty, new OWLLiteralImplFloat(Float.parseFloat(record.get(10))), new HashSet<>()));
             ontology.add(new OWLDataPropertyAssertionAxiomImpl(individual, hasTrainingDifficultyProperty, new OWLLiteralImplInteger(Integer.parseInt(record.get(11))), new HashSet<>()));
             
