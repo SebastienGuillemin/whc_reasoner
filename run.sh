@@ -13,22 +13,20 @@ if [[ $# -eq 0 ]] || [[ "$1" = "core" ]]
 then
     print_big_message "Installing modules in .m2 repository and running the core example"
 
-    cd core
-    mvn clean install exec:java -Dexec.mainClass="com.sebastienguillemin.whcreasoner.core.Example"
-    cd..
+    mvn clean install exec:java -Dexec.mainClass="com.sebastienguillemin.whcreasoner.core.Example" -f core/pom.xml
 elif [[ "$1" = "dataset" ]]
 then
     print_big_message "Creating dataset"
 
-    jupyter nbconvert --to script ./evaluation/construct_dataset.ipynb
     cd evaluation
+    jupyter nbconvert --to script construct_dataset.ipynb
     python construct_dataset.py
     cd ..
 
-    mvn clean install
+    mvn clean install -f core/pom.xml
     for filename in ./evaluation/dataset/*; do
         echo Processing $filename
-        mvn exec:java -Dexec.mainClass="com.sebastienguillemin.whcreasoner.core.ConstructKB" -Dexec.args="$filename"
+        mvn exec:java -Dexec.mainClass="com.sebastienguillemin.whcreasoner.core.ConstructKB" -Dexec.args="$filename" -f core/pom.xml
     done
 elif [[ "$1" = "eval_quanti" ]]
 then

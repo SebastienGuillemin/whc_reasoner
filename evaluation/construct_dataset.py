@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
+# In[1]:
 
 
 import pandas as pd
@@ -13,11 +13,11 @@ from pathlib import Path
 random.seed(0)
 
 
-# In[ ]:
+# In[2]:
 
 
 # Keep breed name in the "Breed" column
-df = pd.read_csv("dogs_dataset.csv")
+df = pd.read_csv("../evaluation/dogs_dataset.csv")
 df["Breed"] = df["Name"]
 df.drop(columns=["Name", "Grooming Needs", "Shedding Level"], inplace=True)
 
@@ -31,31 +31,29 @@ selected_dogs.loc[selected_dogs["breed"] == "Poodle (Toy)", "breed"] = "Poodle"
 selected_dogs.loc[selected_dogs["breed"] == "English Foxhound", "breed"] = "English_Foxhound"
 selected_dogs = selected_dogs.drop(columns=["breed"])   # Dropping Breed as it is the target
 
-selected_dogs
 
-
-# In[ ]:
+# In[3]:
 
 
 column_values = {}
 
-for c in selected_dogs:
-    if c in ["hasFriendlyRating", "hasLifeSpan", "needsHoursOfExercicePerDay", "hasIntelligenceRating", "hasAverageWeight", "hasTrainingDifficulty"]:
-        pass
-    column_values[c] = list(selected_dogs[c].unique())
+column_values["hasHealthIssuesRisk"] = ["Low", "Moderate", "High"]
+column_values["hasSize"] = ["Small-Medium", "Medium", "Large", "Small", "Toy"]
 
-column_values["hasFriendlyRating"] = [1,2,3,4,5,6,7,8,9,10] 
-column_values["needsHoursOfExercicePerDay"] = list(range(1, 25))
-column_values["hasIntelligenceRating"] = [1,2,3,4,5,6,7,8,9,10]
-column_values["hasAverageWeight"] = [1,2,3,4,5,6,7,8,9,10]
-column_values["hasTrainingDifficulty"] = [1,2,3,4,5,6,7,8,9,10]
+column_values["hasFriendlyRating"] = list(range(1, 11)) 
+column_values["hasLifeSpan"] = list(range(5, 21))
+column_values["hasIntelligenceRating"] = list(range(1, 11))
+column_values["hasTrainingDifficulty"] = list(range(1, 11))
 
-columns_names = ["hasName"] + list(column_values.keys())
+column_values["needsHoursOfExercicePerDay"] = np.linspace(0, 24, 49)
 
-print(columns_names)
+column_values["origin"] = ["France", "England"]
+column_values["type"] = ["Hound", "Toy"]
+
+columns_names = ["hasName", "origin", "type", "hasFriendlyRating", "hasLifeSpan", "hasSize", "needsHoursOfExercicePerDay", "hasIntelligenceRating", "hasHealthIssuesRisk", "hasAverageWeight", "hasTrainingDifficulty"]
 
 
-# In[ ]:
+# In[4]:
 
 
 def generate_dogs(n=50):
@@ -99,7 +97,7 @@ Path("./KB").mkdir(parents=True, exist_ok=True)
 
 n = 50
 dog_df = None
-for i in range(15):
+for i in range(14):
     dog_df = generate_dogs(n)
     
     dog_df.to_csv(f"./dataset/dogs_{n}.csv")

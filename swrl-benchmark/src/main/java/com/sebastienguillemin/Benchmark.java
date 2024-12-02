@@ -41,7 +41,7 @@ public class Benchmark {
             // swrlRuleEngine.createSWRLRule("test", ":Dog(?x)->:Otterhound(?x)");
 
             swrlRuleEngine.createSWRLRule("dogs_1", ":origin(?x, :England) ^ :Hound(?x) ^ :hasFriendlyRating(?x, \"7\"^^xsd:integer) ^ :hasSize(?x, \"Large\"^^xsd:string) -> :Otterhound(?x)");
-            swrlRuleEngine.createSWRLRule("dogs_2", ":origin(?x, :England) ^ :Hound(?x) ^ :hasFriendlyRating(?x, \"7\"^^xsd:integer) ^ :hasSize(?x, \"Large\"^^xsd:string) ^ :hasHealthIssuesRisk(?x, \"Low\"^^xsd:string) ^ :hasAverageWeight(?x, ?w) ^ swrlb:lessThanOrEqual(?w, \"28\"^^xsd:float) ^ swrlb:greaterThanOrEqual(?w, \"27\"^^xsd:float) -> :EnglishFoxhound(?x)");
+            swrlRuleEngine.createSWRLRule("dogs_2", ":origin(?x, :England) ^ :Hound(?x) ^ :hasFriendlyRating(?x, \"7\"^^xsd:integer) ^ :hasSize(?x, \"Large\"^^xsd:string) ^ :hasHealthIssuesRisk(?x, \"Low\"^^xsd:string) ^ :hasAverageWeight(?x, ?w) ^ swrlb:greaterThanOrEqual(?w, \"25\"^^xsd:float) ^ swrlb:lessThanOrEqual(?w, \"35\"^^xsd:float) -> :EnglishFoxhound(?x)");
             swrlRuleEngine.createSWRLRule("dogs_3", ":origin(?x, France) ^ :hasFriendlyRating(?x, \"9\"^^xsd:integer) ^ :hasLifeSpan(?x, ?l) ^ swrlb:greaterThanOrEqual(?l, \"13\"^^xsd:integer) -> :Toy(?x)");
 
             System.out.println("Inferring using SWRL rules");

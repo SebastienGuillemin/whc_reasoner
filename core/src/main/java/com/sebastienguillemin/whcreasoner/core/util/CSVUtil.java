@@ -74,6 +74,7 @@ public class CSVUtil {
 
         OWLIndividual individual;
         for (List<String> record : records) {
+            // Create individual
             individual = new OWLNamedIndividualImpl(IRI.create(baseIRI + record.get(1)));
 
             // Class
@@ -85,7 +86,7 @@ public class CSVUtil {
             ontology.add(new OWLDataPropertyAssertionAxiomImpl(individual, hasFriendlyRatingProperty, new OWLLiteralImplInteger(Integer.parseInt(record.get(4))), new HashSet<>()));
             ontology.add(new OWLDataPropertyAssertionAxiomImpl(individual, hasLifeSpanProperty, new OWLLiteralImplInteger(Integer.parseInt(record.get(5))), new HashSet<>()));
             ontology.add(new OWLDataPropertyAssertionAxiomImpl(individual, hasSizeProperty, new OWLLiteralImplString(record.get(6)), new HashSet<>()));
-            ontology.add(new OWLDataPropertyAssertionAxiomImpl(individual, needsHoursOfExercicePerDayProperty, new OWLLiteralImplInteger(Integer.parseInt(record.get(7))), new HashSet<>()));
+            ontology.add(new OWLDataPropertyAssertionAxiomImpl(individual, needsHoursOfExercicePerDayProperty, new OWLLiteralImplFloat(Float.parseFloat(record.get(7))), new HashSet<>()));
             ontology.add(new OWLDataPropertyAssertionAxiomImpl(individual, hasIntelligenceRatingProperty, new OWLLiteralImplInteger(Integer.parseInt(record.get(8))), new HashSet<>()));
             ontology.add(new OWLDataPropertyAssertionAxiomImpl(individual, hashHealthIssuesRiskProperty, new OWLLiteralImplString(record.get(9)), new HashSet<>()));
             ontology.add(new OWLDataPropertyAssertionAxiomImpl(individual, hasAverageWeightProperty, new OWLLiteralImplFloat(Float.parseFloat(record.get(10))), new HashSet<>()));
