@@ -21,3 +21,4 @@ out*
 
 evaluation/dataset/*
 evaluation/KB/*
+*.txt

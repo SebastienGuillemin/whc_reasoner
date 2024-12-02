@@ -45,7 +45,15 @@ elif [[ "$1" = "eval_quali" ]]
 then
     print_big_message "Running qualitative evaluation"
 
-    mvn clean install exec:java -Dexec.mainClass="com.sebastienguillemin.whcreasoner.core.Eval" -Dexec.args="./evaluation/KB/dogs_50.ttl save_inferred_axioms" -f core/pom.xml
+    declare -a KBs=("./evaluation/KB/dogs_50.ttl" "./evaluation/KB/dogs_100.ttl" "./evaluation/KB/dogs_200.ttl")
+
+    mvn clean install -f core/pom.xml
+    for kb in "${KBs[@]}"
+    do
+        print_big_message "Processing $kb"
+        mvn exec:java -Dexec.mainClass="com.sebastienguillemin.whcreasoner.core.Eval" -Dexec.args="$kb save_inferred_axioms" -f core/pom.xml
+    done
+
 elif [[ "$1" = "swrl-eval" ]]
 then
     print_big_message "Running evaluation for SWRL"
