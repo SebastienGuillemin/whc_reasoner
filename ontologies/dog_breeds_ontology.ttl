@@ -1,0 +1,128 @@
+@prefix : <http://www.sebastienguillemin.com/dogs#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@base <http://www.sebastienguillemin.com/dogs#> .
+<http://www.sebastienguillemin.com/dogs> rdf:type owl:Ontology .
+#################################################################
+#    Object Properties
+#################################################################
+###  http://www.sebastienguillemin.com/dogs#origin
+:origin rdf:type owl:ObjectProperty .
+#################################################################
+#    Data properties
+#################################################################
+###  http://www.sebastienguillemin.com/dogs#hasAverageWeight
+:hasAverageWeight rdf:type owl:DatatypeProperty ;
+                  rdfs:domain :Dog ;
+                  rdfs:range xsd:float .
+###  http://www.sebastienguillemin.com/dogs#hasFriendlyRating
+:hasFriendlyRating rdf:type owl:DatatypeProperty ;
+                   rdfs:domain :Dog ;
+                   rdfs:range xsd:integer .
+###  http://www.sebastienguillemin.com/dogs#hasHealthIssuesRisk
+:hasHealthIssuesRisk rdf:type owl:DatatypeProperty ;
+                     rdfs:domain :Dog ;
+                     rdfs:range [ rdf:type rdfs:Datatype ;
+                                  owl:oneOf [ rdf:type rdf:List ;
+                                              rdf:first "High" ;
+                                              rdf:rest [ rdf:type rdf:List ;
+                                                         rdf:first "Low" ;
+                                                         rdf:rest [ rdf:type rdf:List ;
+                                                                    rdf:first "Moderate" ;
+                                                                    rdf:rest rdf:nil
+                                                                  ]
+                                                       ]
+                                            ]
+                                ] .
+###  http://www.sebastienguillemin.com/dogs#hasIntelligenceRating
+:hasIntelligenceRating rdf:type owl:DatatypeProperty ;
+                       rdfs:domain :Dog ;
+                       rdfs:range xsd:integer .
+###  http://www.sebastienguillemin.com/dogs#hasLifeSpan
+:hasLifeSpan rdf:type owl:DatatypeProperty ;
+             rdfs:domain :Dog ;
+             rdfs:range xsd:integer .
+###  http://www.sebastienguillemin.com/dogs#hasName
+:hasName rdf:type owl:DatatypeProperty ;
+         rdfs:domain :Dog ;
+         rdfs:range xsd:string .
+###  http://www.sebastienguillemin.com/dogs#hasSize
+:hasSize rdf:type owl:DatatypeProperty ;
+         rdfs:domain :Dog ;
+         rdfs:range [ rdf:type rdfs:Datatype ;
+                      owl:oneOf [ rdf:type rdf:List ;
+                                  rdf:first "Large" ;
+                                  rdf:rest [ rdf:type rdf:List ;
+                                             rdf:first "Medium" ;
+                                             rdf:rest [ rdf:type rdf:List ;
+                                                        rdf:first "Small" ;
+                                                        rdf:rest [ rdf:type rdf:List ;
+                                                                   rdf:first "Small-Medium" ;
+                                                                   rdf:rest [ rdf:type rdf:List ;
+                                                                              rdf:first "Toy" ;
+                                                                              rdf:rest rdf:nil
+                                                                            ]
+                                                                 ]
+                                                      ]
+                                           ]
+                                ]
+                    ] .
+###  http://www.sebastienguillemin.com/dogs#hasTrainingDifficulty
+:hasTrainingDifficulty rdf:type owl:DatatypeProperty ;
+                       rdfs:domain :Dog ;
+                       rdfs:range xsd:integer .
+###  http://www.sebastienguillemin.com/dogs#needsHoursOfExercicePerDay
+:needsHoursOfExercicePerDay rdf:type owl:DatatypeProperty ;
+                            rdfs:domain :Dog ;
+                            rdfs:range xsd:float .
+#################################################################
+#    Classes
+#################################################################
+###  http://www.sebastienguillemin.com/dogs#Beagle
+:Beagle rdf:type owl:Class ;
+        rdfs:subClassOf :Breed .
+###  http://www.sebastienguillemin.com/dogs#Breed
+:Breed rdf:type owl:Class .
+###  http://www.sebastienguillemin.com/dogs#Country
+:Country rdf:type owl:Class .
+###  http://www.sebastienguillemin.com/dogs#Dog
+:Dog rdf:type owl:Class .
+###  http://www.sebastienguillemin.com/dogs#EnglishFoxhound
+:EnglishFoxhound rdf:type owl:Class ;
+                 rdfs:subClassOf :Breed .
+###  http://www.sebastienguillemin.com/dogs#Harrier
+:Harrier rdf:type owl:Class ;
+         rdfs:subClassOf :Breed .
+###  http://www.sebastienguillemin.com/dogs#Hound
+:Hound rdf:type owl:Class ;
+       rdfs:subClassOf :Type .
+###  http://www.sebastienguillemin.com/dogs#Otterhound
+:Otterhound rdf:type owl:Class ;
+            rdfs:subClassOf :Breed .
+###  http://www.sebastienguillemin.com/dogs#Papillon
+:Papillon rdf:type owl:Class ;
+          rdfs:subClassOf :Breed .
+###  http://www.sebastienguillemin.com/dogs#Poodle
+:Poodle rdf:type owl:Class ;
+        rdfs:subClassOf :Breed .
+###  http://www.sebastienguillemin.com/dogs#Toy
+:Toy rdf:type owl:Class ;
+     rdfs:subClassOf :Type .
+###  http://www.sebastienguillemin.com/dogs#Type
+:Type rdf:type owl:Class .
+###  http://www.sebastienguillemin.com/dogs#Whippet
+:Whippet rdf:type owl:Class ;
+         rdfs:subClassOf :Breed .
+#################################################################
+#    Individuals
+#################################################################
+###  http://www.sebastienguillemin.com/dogs#England
+:England rdf:type owl:NamedIndividual ,
+                  :Country .
+###  http://www.sebastienguillemin.com/dogs#France
+:France rdf:type owl:NamedIndividual ,
+                 :Country .
+###  Generated by the OWL API (version 4.5.26.2023-07-17T20:34:13Z) https://github.com/owlcs/owlapi

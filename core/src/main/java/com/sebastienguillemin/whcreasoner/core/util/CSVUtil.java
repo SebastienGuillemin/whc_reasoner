@@ -105,7 +105,7 @@ public class CSVUtil {
     public static void convertAndSaveDigCSVToKB(int startingDogsCount, int MAX_I) throws OWLOntologyCreationException, FileNotFoundException, IOException, OWLOntologyStorageException {
         int n = startingDogsCount;
         for(int i = 1; i < MAX_I; i++ ) {
-            OntologyWrapper wrapper = CSVUtil.dogsCSVToKB("evaluation/dataset/dogs_" + n + ".csv", "evaluation/dogs_ontology.ttl", "http://www.sebastienguillemin.com/dogs#");
+            OntologyWrapper wrapper = CSVUtil.dogsCSVToKB("evaluation/dataset/dogs_" + n + ".csv", "evaluation/dog_breeeds_ontology.ttl", "http://www.sebastienguillemin.com/dogs#");
             
             wrapper.saveOntology("evaluation/KB/dogs_" + n + ".ttl");
             n *= 2;
