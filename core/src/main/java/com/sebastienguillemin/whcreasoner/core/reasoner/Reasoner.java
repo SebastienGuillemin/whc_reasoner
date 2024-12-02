@@ -42,6 +42,9 @@ public class Reasoner {
 
     @Getter
     private Hashtable<IRI, Integer> inferredAxiomsPerRule;
+
+    @Getter
+    private Set<OWLAxiom> inferredAxioms;
     public long addingInferredAxiomsTime;
     /**
      * 
@@ -52,6 +55,7 @@ public class Reasoner {
         this.ontologyWrapper = OntologyWrapper;
         this.rules = new HashSet<>();
         this.inferredAxiomsPerRule = new Hashtable<>();
+        this.inferredAxioms = new HashSet<>();
         this.addingInferredAxiomsTime = 0l;
     }
 
@@ -104,8 +108,10 @@ public class Reasoner {
                     temp = this.prove(new TreeSet<>(Arrays.asList(ruleHead)), 0, rule.getTotalWeight(), rule.getThreshold(), 0);
 
                     // Adding inferred axioms to inferredAxiomsForCurrentRule
-                    if (temp != null)
+                    if (temp != null) {
+                        this.inferredAxioms.addAll(temp);
                         inferredAxiomsForCurrentRule.addAll(temp);
+                    }
 
                     pb.step();
                 }

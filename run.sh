@@ -30,9 +30,9 @@ then
         echo Processing $filename
         mvn exec:java -Dexec.mainClass="com.sebastienguillemin.whcreasoner.core.ConstructKB" -Dexec.args="$filename"
     done
-elif [[ "$1" = "eval" ]]
+elif [[ "$1" = "eval_quanti" ]]
 then
-    print_big_message "Running evaluation"
+    print_big_message "Running quantitative evaluation"
     
     mvn clean install -f core/pom.xml
     for filename in ./evaluation/KB/*; do
@@ -41,6 +41,11 @@ then
             mvn exec:java -Dexec.mainClass="com.sebastienguillemin.whcreasoner.core.Eval" -Dexec.args="$filename" -f core/pom.xml
         done
     done
+elif [[ "$1" = "eval_quali" ]]
+then
+    print_big_message "Running qualitative evaluation"
+
+    mvn clean install exec:java -Dexec.mainClass="com.sebastienguillemin.whcreasoner.core.Eval" -Dexec.args="./evaluation/KB/dogs_50.ttl save_inferred_axioms" -f core/pom.xml
 elif [[ "$1" = "swrl-eval" ]]
 then
     print_big_message "Running evaluation for SWRL"

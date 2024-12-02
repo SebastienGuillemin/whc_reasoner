@@ -1,5 +1,8 @@
 package com.sebastienguillemin.whcreasoner.core;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.PrintWriter;
 import java.util.Hashtable;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -24,11 +27,15 @@ public class Eval {
     private static IRI WHC_3_IRI = IRI.create("http://www.sebastienguillemin.com/dogs#whc_3");
 
     public static void main(String[] args) throws Exception {
-        String KB = args[0];
+        String KBPath = args[0];
+
+        boolean saveInferredAxioms = false;
+        if (args.length > 1)
+            saveInferredAxioms = args[1].equals("save_inferred_axioms");
 
         OntologyParser ontologyParser = new OntologyParser();
 
-        OWLOntology ontology = ontologyParser.parseTurtleOntology(KB);
+        OWLOntology ontology = ontologyParser.parseTurtleOntology(KBPath);
         OntologyWrapper ontologyWrapper = new OntologyWrapper(ontology);
 
         Logger.log("Ontology loaded. Ontology base IRI : " + ontologyWrapper.getBaseIRI() + "\n");
@@ -51,13 +58,19 @@ public class Eval {
 
         Hashtable<IRI, Integer> inferredAxiomsPerRule = reasoner.getInferredAxiomsPerRule();
 
-        String row = KB + ", " + (stop - start) + ", " + reasoner.addingInferredAxiomsTime + ", " + inferredAxioms.size() + ", ";
+        String row = KBPath + ", " + (stop - start) + ", " + reasoner.addingInferredAxiomsTime + ", " + inferredAxioms.size() + ", ";
         row += inferredAxiomsPerRule.get(WHC_1_IRI) + ", " + inferredAxiomsPerRule.get(WHC_2_IRI) + ", " + inferredAxiomsPerRule.get(WHC_3_IRI);
 
         CSVUtil.addToCSV("whc_result.csv",row);
 
-        if (propertiesReader.getPropertyValueBoolean("KB.save"))
-            ontologyWrapper.saveOntology(propertiesReader.getPropertyValue("KB.path"));
+        if (saveInferredAxioms) {
+            String KBBasename = KBPath.split("/")[3].split("\\.")[0];
+            try (PrintWriter out = new PrintWriter("./inferred_axioms_" + KBBasename + ".txt")) {
+                out.println("Axioms inferred in " + KBBasename + ":\n");
+                for (OWLAxiom axiom : reasoner.getInferredAxioms())
+                    out.println(axiom);
+            }
+        }
 
     }
 }
