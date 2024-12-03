@@ -79,7 +79,6 @@ public class Reasoner {
         Set<Rule> ruleToReprocess = new HashSet<>();
 
         // Set of inferred axioms after having processed all rules.
-        Set<OWLAxiom> inferredAxioms = new HashSet<>();
 
         // Process each rule
         for (Rule rule : rules) {
@@ -124,14 +123,12 @@ public class Reasoner {
 
             // Adding inferred axioms to ontology (done here to avoid proving hypotheses in next rule)
             long start = System.currentTimeMillis();
-            this.ontologyWrapper.addInferredAxioms(inferredAxioms);
+            this.ontologyWrapper.addInferredAxioms(this.inferredAxioms);
             this.addingInferredAxiomsTime += System.currentTimeMillis() - start;
 
             // Finding rule to reprocess
             if (inferredAxiomsForCurrentRule.size() > 0)
                 ruleToReprocess.addAll(rules.stream().filter(r -> r.containsAtom(rule.getHead())).collect(Collectors.toSet()));
-
-            inferredAxioms.addAll(inferredAxiomsForCurrentRule);
         }
 
         // Recursive call

@@ -19,7 +19,7 @@ public class BatchInferrer {
         OWLOntology ontology = ontologyParser.parseTurtleOntology(propertiesReader.getPropertyValue("stups.kb"));
         OntologyWrapper ontologyWrapper = new OntologyWrapper(ontology);
 
-        Logger.log("KB loaded. KB base IRI : " + ontologyWrapper.getBaseIRI() + "\n");
+        Logger.logInfo("KB loaded. KB base IRI : " + ontologyWrapper.getBaseIRI() + "\n");
 
         Reasoner reasoner = new Reasoner(ontologyWrapper);
         RuleParser parser = new RuleParser(ontologyWrapper);
@@ -30,8 +30,12 @@ public class BatchInferrer {
 
         // Infer
         reasoner.triggerRules();
+        Logger.logInfo("Count of inferred axioms: " + reasoner.getInferredAxioms().size());
 
         // Save KB
         ontologyWrapper.saveOntology(propertiesReader.getPropertyValue("stups.path"));
+        Logger.logInfo("New KB saved (path:" + propertiesReader.getPropertyValue("stups.path") + ")");
+
+        // System.out.println(reasoner.getInferredAxioms());
     }
 }
