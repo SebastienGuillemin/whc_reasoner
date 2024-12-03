@@ -35,7 +35,5 @@ public class BatchInferrer {
         // Save KB
         ontologyWrapper.saveOntology(propertiesReader.getPropertyValue("stups.path"));
         Logger.logInfo("New KB saved (path:" + propertiesReader.getPropertyValue("stups.path") + ")");
-
-        // System.out.println(reasoner.getInferredAxioms());
     }
 }
