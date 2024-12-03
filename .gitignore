@@ -22,3 +22,6 @@ out*
 evaluation/dataset/*
 evaluation/KB/*
 *.txt
+populated_STUPS.ttl
+enriched_STUPS.ttl
+new_KB.ttl

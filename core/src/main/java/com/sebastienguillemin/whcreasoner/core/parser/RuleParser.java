@@ -312,12 +312,12 @@ public class RuleParser {
             if (isAConstant(variable1Name))
                 atom.addVariable(this.createIConstant(atom, variable1Name));
             else
-                atom.addVariable(this.createDVariable(checkAndClearVariableSyntaxe(variable1Name.trim()), atom));
+                atom.addVariable(this.createIVariable(checkAndClearVariableSyntaxe(variable1Name.trim()), atom));
             
             if (isAConstant(variable2Name))
                 atom.addVariable(this.createIConstant(atom, variable2Name));
             else
-                atom.addVariable(this.createDVariable(checkAndClearVariableSyntaxe(variable2Name.trim()), atom));
+                atom.addVariable(this.createIVariable(checkAndClearVariableSyntaxe(variable2Name.trim()), atom));
         } else if (atomIRI.equals(BuiltInReference.LESS_THAN_EQUAL.getIri()) || atomIRI.equals(BuiltInReference.GREATER_THAN_EQUAL.getIri())) {
             if (variablesPartsStr.length != 2)
                 throw new RuleParsingException("Need exactly 2 variable to create '" + atomIRI + "' builtIn");

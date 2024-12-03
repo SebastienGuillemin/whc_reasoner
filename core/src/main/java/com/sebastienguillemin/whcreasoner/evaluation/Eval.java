@@ -1,10 +1,7 @@
-package com.sebastienguillemin.whcreasoner.core;
+package com.sebastienguillemin.whcreasoner.evaluation;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.util.Hashtable;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import org.semanticweb.owlapi.model.IRI;
@@ -38,16 +35,17 @@ public class Eval {
         OWLOntology ontology = ontologyParser.parseTurtleOntology(KBPath);
         OntologyWrapper ontologyWrapper = new OntologyWrapper(ontology);
 
-        Logger.log("Ontology loaded. Ontology base IRI : " + ontologyWrapper.getBaseIRI() + "\n");
+        Logger.log("KB loaded. KB base IRI : " + ontologyWrapper.getBaseIRI() + "\n");
 
         Reasoner reasoner = new Reasoner(ontologyWrapper);
         RuleParser parser = new RuleParser(ontologyWrapper);
 
-        Rule rule;
-        for (Entry<String, String> ruleEntry : propertiesReader.getRules().entrySet()) {
-            rule = parser.parseRule(ruleEntry.getKey(), ruleEntry.getValue());
-            reasoner.addRule(rule);
-        }
+        Rule whc1 = parser.parseRule("whc1", propertiesReader.getPropertyValue("rules.whc_1"));
+        Rule whc2 = parser.parseRule("whc2", propertiesReader.getPropertyValue("rules.whc_2"));
+        Rule whc3 = parser.parseRule("whc3", propertiesReader.getPropertyValue("rules.whc_3"));
+        reasoner.addRule(whc1);
+        reasoner.addRule(whc2);
+        reasoner.addRule(whc3);
 
         Long start, stop;
         start = System.currentTimeMillis();

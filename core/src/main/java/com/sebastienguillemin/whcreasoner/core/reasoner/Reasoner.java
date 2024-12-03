@@ -38,6 +38,8 @@ public class Reasoner {
     private static final int MAX_DEPTH = 2;
 
     private OntologyWrapper ontologyWrapper;
+
+    @Getter
     private Set<Rule> rules;
 
     @Getter

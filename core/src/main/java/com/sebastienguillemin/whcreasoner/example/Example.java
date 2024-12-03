@@ -1,4 +1,4 @@
-package com.sebastienguillemin.whcreasoner.core;
+package com.sebastienguillemin.whcreasoner.example;
 
 import java.util.Map.Entry;
 import java.util.Set;
@@ -19,36 +19,49 @@ public class Example {
     private static PropertiesReader propertiesReader = PropertiesReader.getInstance();
 
     public static void main(String[] args) throws Exception {
+        // Load KB
         OntologyParser ontologyParser = new OntologyParser();
-        OWLOntology ontology = ontologyParser.parseTurtleOntology(propertiesReader.getPropertyValue("ontology.path"));
+        OWLOntology ontology = ontologyParser.parseTurtleOntology(propertiesReader.getPropertyValue("example.kb"));
         OntologyWrapper ontologyWrapper = new OntologyWrapper(ontology);
 
-        Logger.log("Ontology loaded. Ontology base IRI : " + ontologyWrapper.getBaseIRI() + "\n");
+        Logger.log("KB loaded. KB base IRI : " + ontologyWrapper.getBaseIRI() + "\n");
 
         Reasoner reasoner = new Reasoner(ontologyWrapper);
         RuleParser parser = new RuleParser(ontologyWrapper);
 
-        Rule rule;
-        for (Entry<String, String> ruleEntry : propertiesReader.getRules().entrySet()) {
-            rule = parser.parseRule(ruleEntry.getKey(), ruleEntry.getValue());
-            reasoner.addRule(rule);
-        }
+        // Parse rules
+        Rule whc1 = parser.parseRule("whc1", propertiesReader.getPropertyValue("rules.whc_1"));
+        Rule whc2 = parser.parseRule("whc2", propertiesReader.getPropertyValue("rules.whc_2"));
+        Rule whc3 = parser.parseRule("whc3", propertiesReader.getPropertyValue("rules.whc_3"));
+        reasoner.addRule(whc1);
+        reasoner.addRule(whc2);
+        reasoner.addRule(whc3);
 
+        // Infer
         Long start, stop;
         start = System.currentTimeMillis();
         Set<OWLAxiom> inferredAxioms =  reasoner.triggerRules();
         stop = System.currentTimeMillis();
 
+        // Print results
+        System.out.println();
         String results = inferredAxioms.size() + " axioms inferred:\n";
-        results += "-> In : " + ((stop - start) / 1000l) + " second(s)";
 
-        for(Entry<IRI, Integer> entry : reasoner.getInferredAxiomsPerRule().entrySet()) {
-            System.out.println("Axioms inferred for rule " + entry.getKey() + " : " + entry.getValue());
-        }
+        for (OWLAxiom axiom : inferredAxioms)
+            results += axiom + "\n";
 
+        results += "-> In : " + (((float) (stop - start)) / 1000f) + " second(s)";
+        
         Logger.log(results);
 
-        if (propertiesReader.getPropertyValueBoolean("KB.save"))
-            ontologyWrapper.saveOntology(propertiesReader.getPropertyValue("KB.path"));
+        System.out.println();
+
+        for(Entry<IRI, Integer> entry : reasoner.getInferredAxiomsPerRule().entrySet()) {
+            Logger.log("Axioms inferred for rule " + entry.getKey() + " : " + entry.getValue());
+        }
+
+        // Save KB
+        if (propertiesReader.getPropertyValueBoolean("example.save"))
+            ontologyWrapper.saveOntology(propertiesReader.getPropertyValue("example.path"));
     }
 }

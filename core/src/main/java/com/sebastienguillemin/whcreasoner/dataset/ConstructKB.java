@@ -1,4 +1,4 @@
-package com.sebastienguillemin.whcreasoner.core;
+package com.sebastienguillemin.whcreasoner.dataset;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;

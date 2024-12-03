@@ -1,20 +1,20 @@
-reasoner:
-  rules: {
-    # lot: "Echantillon(?x)^Echantillon(?y)^owl:differentFrom(?x, ?y)^typeDrogue(?x,?dt)^typeDrogue(?y,?dt)^aPrincipeActif(?x,?pax)^aPrincipeActif(?y,?pay)^aFormeChimique(?pax,?cf)^aSubstance(?pax,?s)^aSubstance(?pay,?s)^forme(?x,?f)^forme(?y,?f)^aFormeChimique(?pay,?cf)^0.5*aAspectExterne(?x,?a)^0.5*aAspectExterne(?y,?a)^0.5*logo(?x,?l)^0.5*logo(?y,?l)->estProcheDe(?x,?y)[1]",
-    whc_1: 'origin(?x, England) ^ Hound(?x) ^ 0.6 * hasFriendlyRating(?x, "7"^^xsd:integer) ^ hasSize(?x, "Large"^^xsd:string) -> Otterhound(?x)[0.75]',
-    whc_2: 'origin(?x, England) ^ Hound(?x) ^ 0.5 * hasFriendlyRating(?x, "7"^^xsd:integer) ^ 0.5 * hasSize(?x, "Large"^^xsd:string) ^ 0.5 * hasHealthIssuesRisk(?x, "Low"^^xsd:string) ^ hasAverageWeight(?x, ?w) ^ swrlb:greaterThanOrEqual(?w, "25"^^xsd:float) ^ swrlb:lessThanOrEqual(?w, "35"^^xsd:float) -> EnglishFoxhound(?x)[0.9]',
-    whc_3: 'origin(?x, France) ^ 0.8 * hasFriendlyRating(?x, "9"^^xsd:integer)^ 0.4 * hasLifeSpan(?x, ?l) ^ 0.4 * swrlb:greaterThanOrEqual(?l, "13"^^xsd:integer) -> Toy(?x)[0.65]'
-  }
+rules:
+  lot: "Echantillon(?x)^Echantillon(?y)^owl:differentFrom(?x, ?y)^typeDrogue(?x,?dt)^typeDrogue(?y,?dt)^aPrincipeActif(?x,?pax)^aPrincipeActif(?y,?pay)^aFormeChimique(?pax,?cf)^aSubstance(?pax,?s)^aSubstance(?pay,?s)^forme(?x,?f)^forme(?y,?f)^aFormeChimique(?pay,?cf)^0.5*aAspectExterne(?x,?a)^0.5*aAspectExterne(?y,?a)^0.5*logo(?x,?l)^0.5*logo(?y,?l)->estProcheDe(?x,?y)[1]"
+  whc_1: 'origin(?x, England) ^ Hound(?x) ^ 0.6 * hasFriendlyRating(?x, "7"^^xsd:integer) ^ hasSize(?x, "Large"^^xsd:string) -> Otterhound(?x)[0.75]'
+  whc_2: 'origin(?x, England) ^ Hound(?x) ^ 0.5 * hasFriendlyRating(?x, "7"^^xsd:integer) ^ 0.5 * hasSize(?x, "Large"^^xsd:string) ^ 0.5 * hasHealthIssuesRisk(?x, "Low"^^xsd:string) ^ hasAverageWeight(?x, ?w) ^ swrlb:greaterThanOrEqual(?w, "25"^^xsd:float) ^ swrlb:lessThanOrEqual(?w, "35"^^xsd:float) -> EnglishFoxhound(?x)[0.9]'
+  whc_3: 'origin(?x, France) ^ 0.8 * hasFriendlyRating(?x, "9"^^xsd:integer)^ 0.4 * hasLifeSpan(?x, ?l) ^ 0.4 * swrlb:greaterThanOrEqual(?l, "13"^^xsd:integer) -> Toy(?x)[0.65]'
 
 util:
   log:
-    info: false
+    info: true
     inference: false
 
-
-ontology:
-  path: ./evaluation/KB/dogs_100.ttl
-
-KB:
-  save: false
+example:
+  kb: ./evaluation/KB/dogs_100.ttl
+  save: true
   path: new_KB.ttl
+
+stups:
+  kb: ./ontologies/populated_STUPS.ttl
+  save: true
+  path: enriched_STUPS.ttl

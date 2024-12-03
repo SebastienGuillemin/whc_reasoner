@@ -4,10 +4,16 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.yaml.snakeyaml.Yaml;
 
+/**
+ * Class to read the properties from the "properties.yml" file.
+ * 
+ * THIS CLASS IS A SINGLETON.
+ */
 public class PropertiesReader {
     private static PropertiesReader propertiesReader;
 
@@ -19,7 +25,7 @@ public class PropertiesReader {
         return PropertiesReader.propertiesReader;
     }
 
-    private Map<String, Object> properties;
+    private HashMap<String, Object> properties;
 
     private PropertiesReader() {
         try {
@@ -55,11 +61,6 @@ public class PropertiesReader {
         }
 
         return value;
-    }
-
-    @SuppressWarnings("unchecked")
-    public Map<String, String> getRules() {
-        return ((Map<String, Map<String, String>>) this.properties.get("reasoner")).get("rules");
     }
 
     public boolean getPropertyValueBoolean(String propertyName) {

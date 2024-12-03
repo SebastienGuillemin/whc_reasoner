@@ -9,11 +9,17 @@ function print_big_message {
 
 }
 
-if [[ $# -eq 0 ]] || [[ "$1" = "core" ]]
+if [[ $# -eq 0 ]] || [[ "$1" = "stups" ]]
 then
-    print_big_message "Installing modules in .m2 repository and running the core example"
+    print_big_message "Running the stups batch inferrer program"
 
-    mvn clean install exec:java -Dexec.mainClass="com.sebastienguillemin.whcreasoner.core.Example" -f core/pom.xml
+    mvn clean install exec:java -Dexec.mainClass="com.sebastienguillemin.whcreasoner.stups.BatchInferrer" -f core/pom.xml
+
+elif [[ "$1" = "example" ]]
+then
+    print_big_message "Running the core example"
+
+    mvn clean install exec:java -Dexec.mainClass="com.sebastienguillemin.whcreasoner.example.Example" -f core/pom.xml
 elif [[ "$1" = "dataset" ]]
 then
     print_big_message "Creating dataset"
@@ -26,7 +32,7 @@ then
     mvn clean install -f core/pom.xml
     for filename in ./evaluation/dataset/*; do
         echo Processing $filename
-        mvn exec:java -Dexec.mainClass="com.sebastienguillemin.whcreasoner.core.ConstructKB" -Dexec.args="$filename" -f core/pom.xml
+        mvn exec:java -Dexec.mainClass="com.sebastienguillemin.whcreasoner.dataset.ConstructKB" -Dexec.args="$filename" -f core/pom.xml
     done
 elif [[ "$1" = "quantitative_evaluation" ]]
 then
@@ -36,7 +42,7 @@ then
     for filename in ./evaluation/KB/*; do
         for i in $(seq 1 10); do
             echo Processing $filename
-            mvn exec:java -Dexec.mainClass="com.sebastienguillemin.whcreasoner.core.Eval" -Dexec.args="$filename" -f core/pom.xml
+            mvn exec:java -Dexec.mainClass="com.sebastienguillemin.whcreasoner.evaluation.Eval" -Dexec.args="$filename" -f core/pom.xml
         done
     done
 elif [[ "$1" = "qualitative_evaluation" ]]
@@ -49,7 +55,7 @@ then
     for kb in "${KBs[@]}"
     do
         print_big_message "Processing $kb"
-        mvn exec:java -Dexec.mainClass="com.sebastienguillemin.whcreasoner.core.Eval" -Dexec.args="$kb save_inferred_axioms" -f core/pom.xml
+        mvn exec:java -Dexec.mainClass="com.sebastienguillemin.whcreasoner.evaluation.Eval" -Dexec.args="$kb save_inferred_axioms" -f core/pom.xml
     done
 
 elif [[ "$1" = "swrl_evaluation" ]]
