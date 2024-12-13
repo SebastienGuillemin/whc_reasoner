@@ -52,8 +52,8 @@ public class Variable extends BaseEntity implements Comparable<Variable> {
     @Getter
     protected HashMap<Variable, Atom> dependsOfObjects;
 
-    @Getter
-    protected boolean boundToNothing;
+    // @Getter
+    // protected boolean boundToNothing;
 
     protected Variable(IRI iri, VariableType type, Atom atom) {
         super(iri);
@@ -62,7 +62,6 @@ public class Variable extends BaseEntity implements Comparable<Variable> {
         this.atoms = new HashMap<>();
         this.dependsOfSubjects = new HashMap<>();
         this.dependsOfObjects = new HashMap<>();
-        this.boundToNothing = false;
         
         this.addAtom(atom);
     }
@@ -72,10 +71,6 @@ public class Variable extends BaseEntity implements Comparable<Variable> {
             throw new VariableValueException(
                     "Cannot update value because " + this.iri.getFragment() + " is a constant.");
 
-        if (this.boundToNothing)
-            throw new VariableValueException(
-                    "Cannot update value because " + this.iri.getFragment() + " is currently bound to nothing. Call 'clear()' first.");
-
         this.value = value;
     }
 
@@ -83,10 +78,9 @@ public class Variable extends BaseEntity implements Comparable<Variable> {
         this.constant = constant;
     }
 
-    public void clear() {
+    public void unbind() {
         if (!this.constant)
             this.value = null;
-            this.boundToNothing = false;
     }
 
     public void addAtom(Atom atom) {
@@ -98,7 +92,7 @@ public class Variable extends BaseEntity implements Comparable<Variable> {
     }
 
     public boolean hasValue() {
-        return !this.isBoundToNothing() && this.value != null;
+        return this.value != null;
     }
 
     /**
@@ -122,11 +116,6 @@ public class Variable extends BaseEntity implements Comparable<Variable> {
         return newVariable;
     }
 
-    public void bindToNothing() {
-        this.clear();
-        this.boundToNothing = true;
-    }
-
     @Override
     public String toString() {
         return this.iri.getFragment() + "_" + this.ID.toString().substring(this.ID.toString().length() - 6) + " (" + this.type + ")" + ((this.value != null) ? " = " + this.value : "");
@@ -136,7 +125,7 @@ public class Variable extends BaseEntity implements Comparable<Variable> {
         if (this.type == VariableType.I_VARIABLE)
             return "?" + this.iri.getFragment() + "_" + this.ID.toString().substring(this.ID.toString().length() - 6) + ((this.value != null) ? "=" + ((OWLNamedIndividual) this.value).getIRI().getFragment() : "");
 
-        return "?" + this.iri.getFragment() + "_" + this.ID.toString().substring(this.ID.toString().length() - 6) + ((this.value != null || this.isBoundToNothing()) ? "=" + this.value : "");
+        return "?" + this.iri.getFragment() + "_" + this.ID.toString().substring(this.ID.toString().length() - 6) + ((this.value != null) ? "=" + this.value : "");
     }
 
     @Override
@@ -144,10 +133,10 @@ public class Variable extends BaseEntity implements Comparable<Variable> {
         if (this.iri.equals(otherVar.getIRI()) && this.ID.equals(otherVar.ID))
             return 0;
 
-        if (this.value == null && !this.boundToNothing)
+        if (this.value == null)
             return 1;
 
-        if (otherVar.getValue() == null && !otherVar.isBoundToNothing())
+        if (otherVar.getValue() == null)
             return -1;
 
         if (!otherVar.getIRI().equals(this.iri))

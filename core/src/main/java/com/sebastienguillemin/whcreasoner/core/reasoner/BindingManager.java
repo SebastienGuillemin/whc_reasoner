@@ -16,7 +16,9 @@ import com.sebastienguillemin.whcreasoner.core.util.Logger;
 import lombok.Getter;
 
 public class BindingManager {
+    @Getter
     private Variable[] variables;
+    
     @Getter
     private List<List<OWLPropertyAssertionObject>> values;
     private int[] pointers;

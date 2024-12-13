@@ -36,7 +36,7 @@ public abstract class AbstractUnaryAtom extends BaseAtom implements UnaryAtom {
 
     @Override
     public boolean allVariablesBound() {
-        return this.variable.isBoundToNothing() || this.variable.getValue() != null;
+        return this.variable.hasValue();
     }
 
     @Override
@@ -80,7 +80,7 @@ public abstract class AbstractUnaryAtom extends BaseAtom implements UnaryAtom {
         // If variable does not exist for new atom
         if (!variables.containsKey(variable.getIRI())) {
             // Copy variable if needed (i.e., it is a constant or "copyVariable is True)")
-            if (this.variable.isConstant() || copyVariable && (this.variable.getValue() != null || this.variable.isBoundToNothing()))
+            if (this.variable.isConstant() || copyVariable && (this.variable.hasValue()))
                 variables.put(variable.getIRI(), variable.copyVariable(newAtom));
 
             // Create new IVar

@@ -248,7 +248,7 @@ public class OntologyWrapper {
         boolean addedAxioms = this.ontology.addAxioms(axioms).equals(ChangeApplied.SUCCESSFULLY);
 
         if (addedAxioms)
-            this.init();
+            this.updateCaches(axioms.stream().flatMap(a -> a.individualsInSignature()).collect(Collectors.toSet()));
 
         return addedAxioms;
     }
@@ -305,6 +305,9 @@ public class OntologyWrapper {
         return str;
     }
 
+    /**
+     * Caches classes, datatypes and properties (i.e., doamins, ranges etc.)
+     */
     private void init() {
         // Process classes
         ontology.classesInSignature().forEach(c -> this.classes.put(c.getIRI(), c));
@@ -348,12 +351,12 @@ public class OntologyWrapper {
         this.dataProperties.keySet().stream()
                 .forEach(dpIRI -> this.objectToSubjectsOfDataProperties.put(dpIRI, new HashMap<>()));
 
-        this.updateCaches();
+        this.updateCaches(this.ontology.getIndividualsInSignature());
     }
 
-    private void updateCaches() {
+    private void updateCaches(Set<OWLNamedIndividual> individuals) {
         IRI iri;
-        for (OWLNamedIndividual individual : this.ontology.getIndividualsInSignature()) {
+        for (OWLNamedIndividual individual : individuals) {
             // Add individual to individuals cache
             this.individuals.put(individual.getIRI(), individual);
 

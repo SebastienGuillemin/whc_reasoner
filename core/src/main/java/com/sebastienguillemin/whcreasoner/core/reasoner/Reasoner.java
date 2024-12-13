@@ -1,5 +1,6 @@
 package com.sebastienguillemin.whcreasoner.core.reasoner;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -29,6 +30,7 @@ import com.sebastienguillemin.whcreasoner.core.exception.InvalidRuleException;
 import com.sebastienguillemin.whcreasoner.core.exception.OWLAxiomConversionException;
 import com.sebastienguillemin.whcreasoner.core.exception.VariableValueException;
 import com.sebastienguillemin.whcreasoner.core.util.Logger;
+import com.sebastienguillemin.whcreasoner.core.util.Util;
 
 import lombok.Getter;
 import me.tongfei.progressbar.ProgressBar;
@@ -36,6 +38,8 @@ import me.tongfei.progressbar.ProgressBar;
 // TODO : l'affichage de la règle en train d'ête exécutée semble ne pas correspondre à celle qui l'est vraiment
 public class Reasoner {
     private static final int MAX_DEPTH = 2;
+
+    public static int skipped = 0;
 
     private OntologyWrapper ontologyWrapper;
 
@@ -48,6 +52,7 @@ public class Reasoner {
     @Getter
     private Set<OWLAxiom> inferredAxioms;
     public long addingInferredAxiomsTime;
+
     /**
      * 
      * @param OntologyWrapper the ontology wrapper containing the ontology in
@@ -66,8 +71,7 @@ public class Reasoner {
         this.inferredAxiomsPerRule.put(rule.getIRI(), 0);
     }
 
-    public Set<OWLAxiom> triggerRules()
-            throws VariableValueException, BindingManagerException, OWLAxiomConversionException {
+    public Set<OWLAxiom> triggerRules() throws VariableValueException, BindingManagerException, OWLAxiomConversionException {
         return this.processRules(this.rules);
     }
 
@@ -85,28 +89,32 @@ public class Reasoner {
             Logger.logInfo("Processing rule : " + rule);
 
             // temp = Temp set (will contain set of inferred axioms for an hypotheses)
-            // inferredAxiomsForCurrentRule = Set containing all inferred axioms for the current rule
+            // inferredAxiomsForCurrentRule = Set containing all inferred axioms for the
+            // current rule
             Set<OWLAxiom> temp, inferredAxiomsForCurrentRule = new HashSet<>();
 
             // Find hypotheses
             Atom ruleHead = rule.getHead();
             BindingManager ruleGoals = new BindingManager(this.findHypotheses(ruleHead));
-            try (ProgressBar pb = new ProgressBar(String.format("[Reasoner] Testing %s hypothesis for rule '%s'",ruleGoals.getTotalIter(), rule.getIRI().getFragment()), ruleGoals.getTotalIter())) {
-                
+            try (ProgressBar pb = new ProgressBar(String.format("[Reasoner] Testing %s hypothesis for rule '%s'",
+                    ruleGoals.getTotalIter(), rule.getIRI().getFragment()), ruleGoals.getTotalIter())) {
+
                 // Process each htpothesis
                 while (ruleGoals.hasNextBinding()) {
                     ruleGoals.nextBinding();
 
                     // Skip if needed
                     if (this.ontologyWrapper.alreadyInOntology(ruleHead)) {
-                        Logger.logInference("####### SKIPPING " + ruleHead + "\n", 0);
+                        skipped++;
+                        // Logger.logInference("####### SKIPPING " + ruleHead + "\n", 0);
                         pb.step();
                         continue;
                     }
 
                     // Try to prove hypothesis
                     Logger.logInference("####### PROVING  " + ruleHead, 0);
-                    temp = this.prove(new TreeSet<>(Arrays.asList(ruleHead)), 0, rule.getTotalWeight(), rule.getThreshold(), 0);
+                    temp = this.backwardChaining(new TreeSet<>(Arrays.asList(ruleHead)), 0, rule, 0);
+                    // System.exit(0);
 
                     // Adding inferred axioms to inferredAxiomsForCurrentRule
                     if (temp != null) {
@@ -117,18 +125,24 @@ public class Reasoner {
                     pb.step();
                 }
             }
-            Logger.logInfo(String.format("%s axioms inferred with rule '%s'.\n", inferredAxiomsForCurrentRule.size(), rule.getIRI().getFragment()));
+            Logger.logInfo(String.format("%s axioms inferred with rule '%s'.\n", inferredAxiomsForCurrentRule.size(),
+                    rule.getIRI().getFragment()));
 
-            this.inferredAxiomsPerRule.put(rule.getIRI(), this.inferredAxiomsPerRule.get(rule.getIRI()) + inferredAxiomsForCurrentRule.size());
+            this.inferredAxiomsPerRule.put(rule.getIRI(),
+                    this.inferredAxiomsPerRule.get(rule.getIRI()) + inferredAxiomsForCurrentRule.size());
 
-            // Adding inferred axioms to ontology (done here to avoid proving hypotheses in next rule)
+            // Adding inferred axioms to ontology (done here to avoid proving hypotheses in
+            // next rule)
             long start = System.currentTimeMillis();
             this.ontologyWrapper.addInferredAxioms(this.inferredAxioms);
             this.addingInferredAxiomsTime += System.currentTimeMillis() - start;
 
             // Finding rule to reprocess
             if (inferredAxiomsForCurrentRule.size() > 0)
-                ruleToReprocess.addAll(rules.stream().filter(r -> r.containsAtom(rule.getHead())).collect(Collectors.toSet()));
+                ruleToReprocess.addAll(
+                    rules.stream().filter(r -> r.containsAtom(rule.getHead()))
+                    .collect(Collectors.toSet())
+                );
         }
 
         // Recursive call
@@ -137,80 +151,95 @@ public class Reasoner {
         return inferredAxioms;
     }
 
-    private Set<OWLAxiom> prove(TreeSet<Atom> goals, float weight, float totalWeight, float threshold, int depth) throws VariableValueException, BindingManagerException, OWLAxiomConversionException {
+    /**
+     * 
+     * @param goals     The set of goals to prove.
+     * @param weight    The weight of validated atoms since the last substitution.
+     * @param substRule The substitution rule.
+     * @param depth     The current depth in the tree search.
+     * @return The list of proven goals.
+     * 
+     * @throws VariableValueException
+     * @throws BindingManagerException
+     * @throws OWLAxiomConversionException
+     */
+    private Set<OWLAxiom> backwardChaining(TreeSet<Atom> goals, float weight, Rule substRule, int depth)
+            throws VariableValueException, BindingManagerException, OWLAxiomConversionException {
 
-        Set<OWLAxiom> res = new TreeSet<>();
         // --- IF NO GOALS TO PROVE THEN RETURNS EMPTY SET
+        Set<OWLAxiom> res = new TreeSet<>();
         if (goals.size() == 0)
             return res;
 
+        Logger.skipLineInference();
         Logger.logInference("Goals : " + goals, depth);
-        
-        // --- IF FIRST GOAL IS IN KB CALL THEN PROVE FOR REMAINING GOALS
-        Atom goal = this.pop(goals);
-        Logger.logInference("Goal : " + goal, depth);
+
+        // --- IF FIRST GOAL IS SATISFIED THEN PROVE FOR REMAINING GOALS
+        Atom goal = Util.pop(goals);
         if (this.satisfied(goal)) {
-            return this.prove(goals, weight, totalWeight, threshold, depth);
+            Logger.logInference("Satisfied : " + goal, depth);
+            return this.backwardChaining(goals, weight, substRule, depth);
+        }
+        Logger.logInference("Not satisfied : " + goal, depth);
+
+
+        // --- IF CURRENT DEPTH > MAX_DEPTH THEN RETURNS EMPTY SET
+        if (depth > MAX_DEPTH)
+            return new TreeSet<>();
+
+        // --- TRY TO PROVE GOAL USING VARIABLE SUBSTITUTIONS
+        BindingManager variableSubstitutions = new BindingManager(this.findVariableSubstitutions(goal));
+        Logger.logInference(variableSubstitutions.getTotalIter() + " binding possibilities", depth);
+        while (variableSubstitutions.hasNextBinding()) {
+            // Bind goal's variable and infer remaining goals.
+            variableSubstitutions.nextBinding();
+            Logger.logInference("Binding variable in goal, becomes : " + goal + "(already satisfied)", depth);
+            res = this.backwardChaining(goals, weight, substRule, depth);
+
+            // If remining goals are inferred
+            if (res != null)
+                return res;
         }
 
-        // --- IF CURRENT DEPTH > MAX_DEPTH THEN GOAL VARIALBES ARE BOUND TO NOTHING
-        if (depth > MAX_DEPTH)
-            this.bindRemainingVariablesToNothing(goal);
-        else {
-            // --- TRY TO BIND UNBOUND VARIABLES AND PROVE REMAING GOALS
-            BindingManager newGoalsManager = new BindingManager(this.findVariableSubstitutions(goal));
-            Logger.logInference(newGoalsManager.getTotalIter() + " binding possibilities", depth);
-            while (newGoalsManager.hasNextBinding()) {
-                // Bind goal's variable and infer remaining goals.
-                newGoalsManager.nextBinding();
-                Logger.logInference("Binding variable in goal, becomes : " + goal + "(already satisfied)", depth);
-                res = this.prove(goals, weight, totalWeight, threshold, depth);
-    
-                // If remining goals are inferred
-                if (res != null)
-                    return res;
+        // UNBIND VARIABLE BIND WHEN TRYING VARIABLE SUBSTITUTIONS
+        Set<Variable> variablesToUnbind = goal.getVariables();
+        variablesToUnbind.retainAll(new ArrayList<>(Arrays.asList(variableSubstitutions.getVariables())));
+        variablesToUnbind.stream().forEach(v -> v.unbind());
+
+        // --- TRY RULE SUBSTITUTIONS
+        // --- (intermediary proved goals are saved!)
+        for (Rule uSubstRule : this.findRuleSubstitutions(goal)) {
+            Logger.logInference(String.format("Substitute %s by rule %s (%s)", goal, uSubstRule, depth), depth);
+
+            res = this.backwardChaining(new TreeSet<>(uSubstRule.getBody()), uSubstRule.getTotalWeight(), uSubstRule,
+                    depth + 1);
+            if (res != null) {
+                res.add(goal.toOWLAxiom());
+                Set<OWLAxiom> goalsInferences = this.backwardChaining(goals, weight, substRule, depth);
+
+                if (goalsInferences != null)
+                    res.addAll(goalsInferences);
+
+                return res;
             }
-    
-            // --- IF NO BINDING WAS TEST PREVIOUSLY THEN TRY TO SUBSTITUTE GOAL BY RULES BODY
-            // --- (intermediary proved goals are saved!)
-            if (newGoalsManager.getTotalIter() == 0) {
-                for (Rule rule : this.findRuleSubstitutions(goal)) {
-                    Logger.logInference(String.format("Substitute %s by rule %s (%s)", goal, rule, depth), depth);
-    
-                    res = this.prove(new TreeSet<>(rule.getBody()), rule.getTotalWeight(), rule.getTotalWeight(),
-                            rule.getThreshold(), depth + 1);
-                    if (res != null) {
-                        res.add(goal.toOWLAxiom());
-                        Set<OWLAxiom> goalsInferences = this.prove(goals, weight, totalWeight, threshold, depth);
-    
-                        if (goalsInferences != null)
-                            res.addAll(goalsInferences);
-    
-                        return res;
-                    }
-                }
-            }
+        }
+
+        Logger.logInference(goal + " is not satisfied (" + depth + ")", depth);
+        if (substRule == null || !(goal instanceof DataPropertyAtom) && !goal.allVariablesBound()) {
+            Logger.logInference("Stopping as goal : " + goal + " cannot be proven and no rule substitution exists.", depth);
+            return res;
         }
 
         // --- IF GOAL CANNOT BE SATISFIED THEN DECREASE WEIGHT
         // --> IF REMAINING WEIGHT IS TOO LOW THEN RETURN NULL
         // --> OTHERWISE TRY TO PROVE REMAINING GOALS
-        Logger.logInference(goal + " is not satisfied (" + depth + ")", depth);
-
         float newWeight = weight - goal.getWeight();
-        if (newWeight / totalWeight < threshold) {
+        if (newWeight / substRule.getTotalWeight() < substRule.getThreshold()) {
             Logger.logInference("Fail" + ((depth == 0) ? "\n" : ""), depth);
             return null;
         }
 
-        return this.prove(goals, newWeight, totalWeight, threshold, depth);
-    }
-
-    private Atom pop(TreeSet<Atom> goals) {
-        Atom goal = goals.first();
-        goals.remove(goal);
-        
-        return goal;
+        return this.backwardChaining(goals, newWeight, substRule, depth);
     }
 
     private boolean satisfied(Atom atom) {
@@ -257,70 +286,6 @@ public class Reasoner {
             return ((BuiltInAtom) atom).isSatisfied();
 
         return false;
-    }
-
-    private void bindRemainingVariablesToNothing(Atom goal) {
-        goal.getVariables().stream().filter(v -> !v.isBoundToNothing() && v.getValue() == null)
-                .forEach(v -> v.bindToNothing());
-    }
-
-    private HashMap<Variable, Set<OWLPropertyAssertionObject>> findVariableSubstitutions(Atom goal) {
-        HashMap<Variable, Set<OWLPropertyAssertionObject>> variablesSubsitutions = new HashMap<>();
-
-        if (goal instanceof UnaryAtom) {
-            Variable variable = ((UnaryAtom) goal).getVariable();
-
-            if (!variable.isBoundToNothing() && variable.getValue() == null) {
-                if (goal instanceof ClassAtom) {
-                    variablesSubsitutions.put(
-                            variable,
-                            this.ontologyWrapper.getIndividualsOfClass(goal.getIRI()));
-                } else if (goal instanceof DatatypeAtom) {
-                    variablesSubsitutions.put(
-                            variable,
-                            this.ontologyWrapper.getLiteralsOftype(goal.getIRI()));
-                }
-            }
-        }
-
-        else if (goal instanceof BinaryAtom) {
-            BinaryAtom binaryAtom = (BinaryAtom) goal;
-            Variable variable1 = binaryAtom.getFirstVariable();
-            Variable variable2 = binaryAtom.getSecondVariable();
-
-            if (!variable1.isBoundToNothing() && variable1.getValue() == null) {
-                if (goal instanceof ObjectPropertyAtom) {
-                    variablesSubsitutions.put(
-                            variable1,
-                            this.ontologyWrapper.getSubjectForObjectOfObjectProperty(goal.getIRI(),
-                                    variable2.getValue()));
-                }
-                if (goal instanceof DataPropertyAtom) {
-                    variablesSubsitutions.put(
-                            variable1,
-                            this.ontologyWrapper.getSubjectForObjectOfDataProperty(goal.getIRI(),
-                                    variable2.getValue()));
-                }
-            }
-
-            if (!variable2.isBoundToNothing() && variable2.getValue() == null) {
-                if (goal instanceof ObjectPropertyAtom) {
-                    variablesSubsitutions.put(
-                            variable2,
-                            this.ontologyWrapper.getObjectForSubjectOfObjectProperty(goal.getIRI(),
-                                    variable1.getValue()));
-                }
-                if (goal instanceof DataPropertyAtom) {
-                    variablesSubsitutions.put(
-                            variable2,
-                            this.ontologyWrapper.getObjectForSubjectOfDataProperty(goal.getIRI(),
-                                    variable1.getValue()));
-                }
-
-            }
-        }
-
-        return variablesSubsitutions;
     }
 
     private HashMap<Variable, Set<OWLPropertyAssertionObject>> findHypotheses(Atom atom) {
@@ -385,6 +350,65 @@ public class Reasoner {
         return variablesValues;
     }
 
+    private HashMap<Variable, Set<OWLPropertyAssertionObject>> findVariableSubstitutions(Atom goal) {
+        HashMap<Variable, Set<OWLPropertyAssertionObject>> variablesSubsitutions = new HashMap<>();
+
+        if (goal instanceof UnaryAtom) {
+            Variable variable = ((UnaryAtom) goal).getVariable();
+
+            if (!variable.hasValue()) {
+                if (goal instanceof ClassAtom) {
+                    variablesSubsitutions.put(
+                            variable,
+                            this.ontologyWrapper.getIndividualsOfClass(goal.getIRI()));
+                } else if (goal instanceof DatatypeAtom) {
+                    variablesSubsitutions.put(
+                            variable,
+                            this.ontologyWrapper.getLiteralsOftype(goal.getIRI()));
+                }
+            }
+        }
+
+        else if (goal instanceof BinaryAtom) {
+            BinaryAtom binaryAtom = (BinaryAtom) goal;
+            Variable variable1 = binaryAtom.getFirstVariable();
+            Variable variable2 = binaryAtom.getSecondVariable();
+
+            if (!variable1.hasValue()) {
+                if (goal instanceof ObjectPropertyAtom) {
+                    variablesSubsitutions.put(
+                            variable1,
+                            this.ontologyWrapper.getSubjectForObjectOfObjectProperty(goal.getIRI(),
+                                    variable2.getValue()));
+                }
+                if (goal instanceof DataPropertyAtom) {
+                    variablesSubsitutions.put(
+                            variable1,
+                            this.ontologyWrapper.getSubjectForObjectOfDataProperty(goal.getIRI(),
+                                    variable2.getValue()));
+                }
+            }
+
+            if (!variable2.hasValue()) {
+                if (goal instanceof ObjectPropertyAtom) {
+                    variablesSubsitutions.put(
+                            variable2,
+                            this.ontologyWrapper.getObjectForSubjectOfObjectProperty(goal.getIRI(),
+                                    variable1.getValue()));
+                }
+                if (goal instanceof DataPropertyAtom) {
+                    variablesSubsitutions.put(
+                            variable2,
+                            this.ontologyWrapper.getObjectForSubjectOfDataProperty(goal.getIRI(),
+                                    variable1.getValue()));
+                }
+
+            }
+        }
+
+        return variablesSubsitutions;
+    }
+
     private Set<Rule> findRuleSubstitutions(Atom goal) throws VariableValueException {
         if (goal.getVariables().stream().filter(v -> !v.hasValue()).collect(Collectors.toSet()).size() != 0)
             return new HashSet<>();
@@ -402,9 +426,7 @@ public class Reasoner {
                     Variable ruleHeadVar = ((UnaryAtom) tempRule.getHead()).getVariable();
                     Variable goalVar = unaryGoal.getVariable();
 
-                    if (goalVar.isBoundToNothing())
-                        ruleHeadVar.bindToNothing();
-                    else
+                    if (goalVar.hasValue())
                         ruleHeadVar.setValue(goalVar.getValue());
                 } else if (goal instanceof BinaryAtom) {
                     BinaryAtom binaryGoal = (BinaryAtom) goal;
@@ -413,14 +435,10 @@ public class Reasoner {
                     Variable firstGoalVar = binaryGoal.getFirstVariable();
                     Variable secondGoalVar = binaryGoal.getSecondVariable();
 
-                    if (firstGoalVar.isBoundToNothing())
-                        firstRuleHeadVar.bindToNothing();
-                    else
+                    if (firstGoalVar.hasValue())
                         firstRuleHeadVar.setValue(firstGoalVar.getValue());
 
-                    if (secondGoalVar.isBoundToNothing())
-                        secondRuleHeadVar.bindToNothing();
-                    else
+                    if (secondGoalVar.hasValue())
                         secondRuleHeadVar.setValue(secondGoalVar.getValue());
                 }
 

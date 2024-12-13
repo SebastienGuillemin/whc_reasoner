@@ -47,10 +47,13 @@ public class Example {
         System.out.println();
         String results = inferredAxioms.size() + " axioms inferred:\n";
 
-        for (OWLAxiom axiom : inferredAxioms)
-            results += axiom + "\n";
+        if (propertiesReader.getPropertyValueBoolean("example.displayInferredAxioms"))
+            for (OWLAxiom axiom : inferredAxioms)
+                results += axiom + "\n";
 
         results += "-> In : " + (((float) (stop - start)) / 1000f) + " second(s)";
+
+        System.out.println("Skipped : " + Reasoner.skipped);
         
         Logger.log(results);
 

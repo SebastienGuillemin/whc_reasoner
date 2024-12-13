@@ -107,8 +107,7 @@ abstract class AbstractBinaryAtom extends BaseAtom implements BinaryAtom {
 
     @Override
     public boolean allVariablesBound() {
-        return (this.firstVariable.isBoundToNothing() || this.firstVariable.getValue() != null) &&
-            (this.secondVariable.isBoundToNothing() || this.secondVariable.getValue() != null);
+        return (this.firstVariable.hasValue()) && (this.secondVariable.hasValue());
     }
 
 
@@ -118,7 +117,7 @@ abstract class AbstractBinaryAtom extends BaseAtom implements BinaryAtom {
         // If first variable does not exist for new atom
         if (!variables.containsKey(this.firstVariable.getIRI())){
             // Copy first variable if needed (i.e., it is a constant or "copyVariable is True)")
-            if (this.firstVariable.isConstant() || copyVariable && (this.firstVariable.getValue() != null || this.firstVariable.isBoundToNothing()))
+            if (this.firstVariable.isConstant() || copyVariable && (this.firstVariable.hasValue()))
                 variables.put(this.firstVariable.getIRI(), this.firstVariable.copyVariable(newAtom));
 
             // Create new IVar
@@ -135,7 +134,7 @@ abstract class AbstractBinaryAtom extends BaseAtom implements BinaryAtom {
         // If second variable does not exist for new atom
         if (!variables.containsKey(this.secondVariable.getIRI())) {
             // Copy second variable if needed (i.e., it is a constant or "copyVariable is True)")
-            if (this.secondVariable.isConstant() || (copyVariable && (this.secondVariable.getValue() != null || this.secondVariable.isBoundToNothing())))
+            if (this.secondVariable.isConstant() || (copyVariable && (this.secondVariable.hasValue())))
                 variables.put(this.secondVariable.getIRI(), this.secondVariable.copyVariable(newAtom));
     
             // Create new IVar

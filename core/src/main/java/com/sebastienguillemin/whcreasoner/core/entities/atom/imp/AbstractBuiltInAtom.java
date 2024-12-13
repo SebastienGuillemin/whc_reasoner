@@ -108,7 +108,7 @@ public abstract class AbstractBuiltInAtom extends BaseAtom implements BuiltInAto
             // If variable does not exist for new atom
             if (!variables.containsKey(variable.getIRI())) {
                 // Copy variable if needed (i.e., it is a constant or "copyVariable is True)")
-                if (variable.isConstant() || copyVariable && (variable.getValue() != null || variable.isBoundToNothing())) {
+                if (variable.isConstant() || copyVariable && (variable.hasValue())) {
                     newVariable = variable.copyVariable(newAtom);
                     variables.put(variable.getIRI(), newVariable);
                 }

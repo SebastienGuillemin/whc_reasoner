@@ -66,4 +66,9 @@ public class Logger {
 
         System.out.println("[" + classCaller + "] " + "--" + "--".repeat(2 * depth) + "> " + message);
     }
+
+    public static void skipLineInference() {
+        if (ENABLE_LOG_INFERENCE)
+            System.out.println();
+    }
 }
