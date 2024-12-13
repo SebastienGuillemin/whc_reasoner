@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[11]:
 
 
 import pandas as pd
@@ -13,7 +13,7 @@ from pathlib import Path
 random.seed(0)
 
 
-# In[2]:
+# In[ ]:
 
 
 # Keep breed name in the "Breed" column
@@ -25,14 +25,12 @@ df.drop(columns=["Name", "Grooming Needs", "Shedding Level"], inplace=True)
 df = df.rename(columns={"Origin" : "origin", "Type" : "type", "Friendly Rating (1-10)" : "hasFriendlyRating", "Life Span" : "hasLifeSpan", "Size" : "hasSize",  "Exercise Requirements (hrs/day)" : "needsHoursOfExercicePerDay", "Intelligence Rating (1-10)" : "hasIntelligenceRating", "Health Issues Risk" : "hasHealthIssuesRisk", "Average Weight (kg)" : "hasAverageWeight", "Training Difficulty (1-10)" : "hasTrainingDifficulty", "Breed" : "breed"})
 df.columns = df.columns.str.replace(' ', '_')
 
-# Clear data
-selected_dogs = df[((df["origin"] == "France") & (df["type"] == "Toy")) | ((df["origin"] == "England") & (df["type"] == "Hound"))]
-selected_dogs.loc[selected_dogs["breed"] == "Poodle (Toy)", "breed"] = "Poodle"
-selected_dogs.loc[selected_dogs["breed"] == "English Foxhound", "breed"] = "English_Foxhound"
-selected_dogs = selected_dogs.drop(columns=["breed"])   # Dropping Breed as it is the target
+display(df)
+
+df["origin"].unique()
 
 
-# In[3]:
+# In[ ]:
 
 
 column_values = {}
@@ -47,14 +45,17 @@ column_values["hasTrainingDifficulty"] = list(range(1, 11))
 
 column_values["needsHoursOfExercicePerDay"] = np.linspace(0, 24, 49)
 
-column_values["origin"] = ["France", "England"]
-column_values["type"] = ["Hound", "Toy"]
+column_values["origin"] = ["France", "England", "USA", "Germany", "Canada", "Spain"]
+column_values["type"] = ["Germany", "Afghanistan", "England", "Japan", "USA", "Australia", "Central Africa", "France", "Scotland", "Switzerland"]
 
 columns_names = ["hasName", "origin", "type", "hasFriendlyRating", "hasLifeSpan", "hasSize", "needsHoursOfExercicePerDay", "hasIntelligenceRating", "hasHealthIssuesRisk", "hasAverageWeight", "hasTrainingDifficulty"]
 
 
-# In[4]:
+# In[ ]:
 
+
+rand_range = [x / 100.0 for x in range(0, 10000)]
+percent_missing_val = 5.0
 
 def generate_dogs(n=50):
     print(f"Generating {n} new dogs !")
@@ -71,20 +72,22 @@ def generate_dogs(n=50):
     data['hasHealthIssuesRisk'] = []
     data['hasAverageWeight'] = []
     data['hasTrainingDifficulty'] = []
+
     
     for i in range(n):
-        data['hasName'].append(f"dog_{i}")    
-        data['origin'].append(random.choices(column_values["origin"])[0])
-        data['type'].append(random.choices(column_values["type"])[0])
-        data['hasFriendlyRating'].append(random.choices(column_values["hasFriendlyRating"])[0])
-        data['hasLifeSpan'].append(random.choices(column_values["hasLifeSpan"])[0])
-        data['hasSize'].append(random.choices(column_values["hasSize"])[0])
-        data['needsHoursOfExercicePerDay'].append(random.choices(column_values["needsHoursOfExercicePerDay"])[0])
-        data['hasIntelligenceRating'].append(random.choices(column_values["hasIntelligenceRating"])[0])
-        data['hasHealthIssuesRisk'].append(random.choices(column_values["hasHealthIssuesRisk"])[0])
-        data['hasAverageWeight'].append(round(np.random.uniform(low=5, high=35), 2))
-        data['hasTrainingDifficulty'].append(random.choices(column_values["hasTrainingDifficulty"])[0])
-
+        mask = random.sample(rand_range, 10)
+        data['hasName'].append(f"dog_{i}")
+        data['origin'].append(random.choices(column_values["origin"])[0] if mask[0] >= percent_missing_val else None)
+        data['type'].append(random.choices(column_values["type"])[0] if mask[1] >= percent_missing_val else None)
+        data['hasFriendlyRating'].append(random.choices(column_values["hasFriendlyRating"])[0] if mask[2] >= percent_missing_val else None)        
+        data['hasLifeSpan'].append(random.choices(column_values["hasLifeSpan"])[0] if mask[3] >= percent_missing_val else None)        
+        data['hasSize'].append(random.choices(column_values["hasSize"])[0] if mask[4] >= percent_missing_val else None)        
+        data['needsHoursOfExercicePerDay'].append(random.choices(column_values["needsHoursOfExercicePerDay"])[0] if mask[5] >= percent_missing_val else None)        
+        data['hasIntelligenceRating'].append(random.choices(column_values["hasIntelligenceRating"])[0] if mask[6] >= percent_missing_val else None)        
+        data['hasHealthIssuesRisk'].append(random.choices(column_values["hasHealthIssuesRisk"])[0] if mask[7] >= percent_missing_val else None)        
+        data['hasAverageWeight'].append(round(np.random.uniform(low=5, high=35), 2) if mask[8] >= percent_missing_val else None)        
+        data['hasTrainingDifficulty'].append(random.choices(column_values["hasTrainingDifficulty"])[0] if mask[9] >= percent_missing_val else None)
+        
     return pd.DataFrame(data=data, columns=columns_names)
 
 
@@ -94,14 +97,13 @@ def generate_dogs(n=50):
 Path("./dataset").mkdir(parents=True, exist_ok=True)
 Path("./KB").mkdir(parents=True, exist_ok=True)
 
-
 n = 50
 dog_df = None
-for i in range(14):
+for i in range(16):
     dog_df = generate_dogs(n)
-    
+
     dog_df.to_csv(f"./dataset/dogs_{n}.csv")
-    print(f"{n} dogs generated and saved in file dogs_{n}.ttl")
+    print(f"{n} dogs generated and saved in file dogs_{n}.csv")
     print()
 
     n *= 2

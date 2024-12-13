@@ -13,7 +13,7 @@ public class ConstructKB {
     public static void main(String[] args) throws OWLOntologyCreationException, FileNotFoundException, IOException, OWLOntologyStorageException {
         String csvFileName = args[0];
 
-        OntologyWrapper ontology = CSVUtil.dogsCSVToKB(csvFileName, "ontologies/dog_breeeds_ontology.ttl", "http://www.sebastienguillemin.com/dogs#");
+        OntologyWrapper ontology = CSVUtil.dogsCSVToKB(csvFileName, "ontologies/dog_breeds_ontology.ttl", "http://www.sebastienguillemin.com/dogs#");
         ontology.saveOntology("evaluation/KB/" + csvFileName.split("/")[3].split("\\.")[0] + ".ttl");
     }
 }
