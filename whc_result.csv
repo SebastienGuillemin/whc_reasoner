@@ -139,3 +139,6 @@ KB,Inferring time (ms), Adding atoms (ms), Inferred axioms, WHC_1, WHC_2, WHC_3
 ./evaluation/KB/dogs_800.ttl, 219, 11, 46, 2, 0, 44
 ./evaluation/KB/dogs_800.ttl, 220, 6, 46, 2, 0, 44
 ./evaluation/KB/dogs_800.ttl, 231, 4, 46, 2, 0, 44
+./evaluation/KB/dogs_50.ttl, 129, 3, 3, 0, 0, 3
+./evaluation/KB/dogs_100.ttl, 192, 3, 5, 0, 0, 5
+./evaluation/KB/dogs_200.ttl, 173, 3, 11, 1, 0, 10
