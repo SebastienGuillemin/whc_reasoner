@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[5]:
+# In[1]:
 
 
 import pandas as pd
@@ -13,7 +13,7 @@ from pathlib import Path
 random.seed(0)
 
 
-# In[6]:
+# In[2]:
 
 
 column_values = {}
@@ -35,7 +35,7 @@ columns_names = ["hasName", "origin", "type", "hasFriendlyRating", "hasLifeSpan"
 data_columns_names = ["hasFriendlyRating", "hasLifeSpan", "hasSize", "needsHoursOfExercicePerDay", "hasIntelligenceRating", "hasHealthIssuesRisk", "hasAverageWeight", "hasTrainingDifficulty"]
 
 
-# In[7]:
+# In[3]:
 
 
 def generate_dogs(n=50):
@@ -74,18 +74,18 @@ def generate_dogs(n=50):
     for col in data_columns_names:
         if n == 50: # These conditions ensures that 5% of the cells are None when n = 50
             if i < 4:
-                df.loc[df.sample(frac=0.02).index, col] = None
+                df.loc[df.sample(frac=0.02, random_state=42).index, col] = None
             if i >= 4:
-                df.loc[df.sample(frac=0.08).index, col] = None 
+                df.loc[df.sample(frac=0.08, random_state=42).index, col] = None 
             i += 1
         else:
-            df.loc[df.sample(frac=0.05).index, col] = None 
+            df.loc[df.sample(frac=0.05, random_state=42).index, col] = None 
         
         
     return df
 
 
-# In[8]:
+# In[ ]:
 
 
 Path("./dataset").mkdir(parents=True, exist_ok=True)
