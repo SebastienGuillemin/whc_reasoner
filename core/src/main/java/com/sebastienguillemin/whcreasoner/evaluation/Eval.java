@@ -40,9 +40,9 @@ public class Eval {
         Reasoner reasoner = new Reasoner(ontologyWrapper);
         RuleParser parser = new RuleParser(ontologyWrapper);
 
-        Rule whc1 = parser.parseRule("whc1", propertiesReader.getPropertyValue("rules.whc_1"));
-        Rule whc2 = parser.parseRule("whc2", propertiesReader.getPropertyValue("rules.whc_2"));
-        Rule whc3 = parser.parseRule("whc3", propertiesReader.getPropertyValue("rules.whc_3"));
+        Rule whc1 = parser.parseRule("whc_1", propertiesReader.getPropertyValue("rules.whc_1"));
+        Rule whc2 = parser.parseRule("whc_2", propertiesReader.getPropertyValue("rules.whc_2"));
+        Rule whc3 = parser.parseRule("whc_3", propertiesReader.getPropertyValue("rules.whc_3"));
         reasoner.addRule(whc1);
         reasoner.addRule(whc2);
         reasoner.addRule(whc3);

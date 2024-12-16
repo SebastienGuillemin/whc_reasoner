@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[11]:
+# In[ ]:
 
 
 import pandas as pd
@@ -11,23 +11,6 @@ from pathlib import Path
 
 
 random.seed(0)
-
-
-# In[ ]:
-
-
-# Keep breed name in the "Breed" column
-df = pd.read_csv("../evaluation/dogs_dataset.csv")
-df["Breed"] = df["Name"]
-df.drop(columns=["Name", "Grooming Needs", "Shedding Level"], inplace=True)
-
-# Rename columns
-df = df.rename(columns={"Origin" : "origin", "Type" : "type", "Friendly Rating (1-10)" : "hasFriendlyRating", "Life Span" : "hasLifeSpan", "Size" : "hasSize",  "Exercise Requirements (hrs/day)" : "needsHoursOfExercicePerDay", "Intelligence Rating (1-10)" : "hasIntelligenceRating", "Health Issues Risk" : "hasHealthIssuesRisk", "Average Weight (kg)" : "hasAverageWeight", "Training Difficulty (1-10)" : "hasTrainingDifficulty", "Breed" : "breed"})
-df.columns = df.columns.str.replace(' ', '_')
-
-display(df)
-
-df["origin"].unique()
 
 
 # In[ ]:
@@ -45,8 +28,8 @@ column_values["hasTrainingDifficulty"] = list(range(1, 11))
 
 column_values["needsHoursOfExercicePerDay"] = np.linspace(0, 24, 49)
 
-column_values["origin"] = ["France", "England", "USA", "Germany", "Canada", "Spain"]
-column_values["type"] = ["Germany", "Afghanistan", "England", "Japan", "USA", "Australia", "Central Africa", "France", "Scotland", "Switzerland"]
+column_values["origin"] = ["Germany", "Afghanistan", "England", "Japan", "USA", "Australia", "CentralAfrica", "France", "Scotland", "Switzerland"]
+column_values["type"] = ["Toy", "Hound", "Terrier", "Working", "Non-Sporting", "Herding", "Sporting", "Standard"]
 
 columns_names = ["hasName", "origin", "type", "hasFriendlyRating", "hasLifeSpan", "hasSize", "needsHoursOfExercicePerDay", "hasIntelligenceRating", "hasHealthIssuesRisk", "hasAverageWeight", "hasTrainingDifficulty"]
 
@@ -99,7 +82,7 @@ Path("./KB").mkdir(parents=True, exist_ok=True)
 
 n = 50
 dog_df = None
-for i in range(16):
+for i in range(14):
     dog_df = generate_dogs(n)
 
     dog_df.to_csv(f"./dataset/dogs_{n}.csv")

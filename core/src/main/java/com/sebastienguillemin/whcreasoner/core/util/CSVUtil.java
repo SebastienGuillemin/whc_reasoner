@@ -82,35 +82,35 @@ public class CSVUtil {
             ontology.add(new OWLClassAssertionAxiomImpl(individual, new OWLClassImpl(IRI.create(baseIRI + record.get(3))), new HashSet<>()));
 
             // Data properties
-            if (record.get(1) != null && !record.get(1).equals(""))
+            if (record.size() >= 2 && record.get(1) != null && !record.get(1).equals(""))
                 ontology.add(new OWLDataPropertyAssertionAxiomImpl(individual, hasNameProperty, new OWLLiteralImplString(record.get(1)), new HashSet<>()));            
             
-            if (record.get(4) != null && !record.get(4).equals(""))
-                ontology.add(new OWLDataPropertyAssertionAxiomImpl(individual, hasFriendlyRatingProperty, new OWLLiteralImplInteger(Integer.parseInt(record.get(4))), new HashSet<>()));
+            if (record.size() >= 5 && record.get(4) != null && !record.get(4).equals(""))
+                ontology.add(new OWLDataPropertyAssertionAxiomImpl(individual, hasFriendlyRatingProperty, new OWLLiteralImplInteger((int) Float.parseFloat(record.get(4))), new HashSet<>()));
             
-            if (record.get(5) != null && !record.get(5).equals(""))
+            if (record.size() >= 6 && record.get(5) != null && !record.get(5).equals(""))
                 ontology.add(new OWLDataPropertyAssertionAxiomImpl(individual, hasLifeSpanProperty, new OWLLiteralImplInteger((int) Float.parseFloat(record.get(5))), new HashSet<>()));
         
-            if (record.get(6) != null && !record.get(6).equals(""))
+            if (record.size() >= 7 && record.get(6) != null && !record.get(6).equals(""))
                 ontology.add(new OWLDataPropertyAssertionAxiomImpl(individual, hasSizeProperty, new OWLLiteralImplString(record.get(6)), new HashSet<>()));
         
-            if (record.get(7) != null && !record.get(7).equals(""))
+            if (record.size() >= 8 && record.get(7) != null && !record.get(7).equals(""))
                 ontology.add(new OWLDataPropertyAssertionAxiomImpl(individual, needsHoursOfExercicePerDayProperty, new OWLLiteralImplFloat(Float.parseFloat(record.get(7))), new HashSet<>()));
         
-            if (record.get(8) != null && !record.get(8).equals(""))
+            if (record.size() >= 9 && record.get(8) != null && !record.get(8).equals(""))
                 ontology.add(new OWLDataPropertyAssertionAxiomImpl(individual, hasIntelligenceRatingProperty, new OWLLiteralImplInteger((int) Float.parseFloat(record.get(8))), new HashSet<>()));
         
-            if (record.get(9) != null && !record.get(9).equals(""))
+            if (record.size() >= 10 && record.get(9) != null && !record.get(9).equals(""))
                 ontology.add(new OWLDataPropertyAssertionAxiomImpl(individual, hasHealthIssuesRiskProperty, new OWLLiteralImplString(record.get(9)), new HashSet<>()));
         
-            if (record.get(10) != null && !record.get(10).equals(""))
+            if (record.size() >= 11 && record.get(10) != null && !record.get(10).equals(""))
                 ontology.add(new OWLDataPropertyAssertionAxiomImpl(individual, hasAverageWeightProperty, new OWLLiteralImplFloat(Float.parseFloat(record.get(10))), new HashSet<>()));
         
-            if (record.size() == 12 && record.get(11) != null && !record.get(11).equals(""))
+            if (record.size() >= 12 && record.get(11) != null && !record.get(11).equals(""))
                 ontology.add(new OWLDataPropertyAssertionAxiomImpl(individual, hasTrainingDifficultyProperty, new OWLLiteralImplInteger((int) Float.parseFloat(record.get(11))), new HashSet<>()));
             
             // Object properties
-            if (record.get(2) != null && !record.get(2).equals(""))
+            if (record.size() >= 3 && record.get(2) != null && !record.get(2).equals(""))
                 ontology.add(new OWLObjectPropertyAssertionAxiomImpl(individual, originProperty, wrapper.getIndividual(IRI.create(baseIRI + record.get(2))), new HashSet<>()));
         }
 

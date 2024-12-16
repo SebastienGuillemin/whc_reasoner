@@ -95,7 +95,7 @@ public class Reasoner {
 
             // Find hypotheses
             Atom ruleHead = rule.getHead();
-            BindingManager ruleGoals = new BindingManager(this.findHypotheses(ruleHead));
+            BindingManager ruleGoals = new BindingManager(this.findGoals(ruleHead));
             try (ProgressBar pb = new ProgressBar(String.format("[Reasoner] Testing %s hypothesis for rule '%s'",
                     ruleGoals.getTotalIter(), rule.getIRI().getFragment()), ruleGoals.getTotalIter())) {
 
@@ -127,7 +127,7 @@ public class Reasoner {
             }
             Logger.logInfo(String.format("%s axioms inferred with rule '%s'.\n", inferredAxiomsForCurrentRule.size(),
                     rule.getIRI().getFragment()));
-
+                    
             this.inferredAxiomsPerRule.put(rule.getIRI(),
                     this.inferredAxiomsPerRule.get(rule.getIRI()) + inferredAxiomsForCurrentRule.size());
 
@@ -288,7 +288,7 @@ public class Reasoner {
         return false;
     }
 
-    private HashMap<Variable, Set<OWLPropertyAssertionObject>> findHypotheses(Atom atom) {
+    private HashMap<Variable, Set<OWLPropertyAssertionObject>> findGoals(Atom atom) {
         HashMap<Variable, Set<OWLPropertyAssertionObject>> variablesValues = new HashMap<>();
 
         if (atom instanceof ClassAtom) {
