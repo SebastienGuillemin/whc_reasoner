@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
+# In[5]:
 
 
 import pandas as pd
@@ -13,7 +13,7 @@ from pathlib import Path
 random.seed(0)
 
 
-# In[ ]:
+# In[6]:
 
 
 column_values = {}
@@ -32,13 +32,11 @@ column_values["origin"] = ["Germany", "Afghanistan", "England", "Japan", "USA", 
 column_values["type"] = ["Toy", "Hound", "Terrier", "Working", "Non-Sporting", "Herding", "Sporting", "Standard"]
 
 columns_names = ["hasName", "origin", "type", "hasFriendlyRating", "hasLifeSpan", "hasSize", "needsHoursOfExercicePerDay", "hasIntelligenceRating", "hasHealthIssuesRisk", "hasAverageWeight", "hasTrainingDifficulty"]
+data_columns_names = ["hasFriendlyRating", "hasLifeSpan", "hasSize", "needsHoursOfExercicePerDay", "hasIntelligenceRating", "hasHealthIssuesRisk", "hasAverageWeight", "hasTrainingDifficulty"]
 
 
-# In[ ]:
+# In[7]:
 
-
-rand_range = [x / 100.0 for x in range(0, 10000)]
-percent_missing_val = 5.0
 
 def generate_dogs(n=50):
     print(f"Generating {n} new dogs !")
@@ -58,23 +56,36 @@ def generate_dogs(n=50):
 
     
     for i in range(n):
-        mask = random.sample(rand_range, 10)
         data['hasName'].append(f"dog_{i}")
-        data['origin'].append(random.choices(column_values["origin"])[0] if mask[0] >= percent_missing_val else None)
-        data['type'].append(random.choices(column_values["type"])[0] if mask[1] >= percent_missing_val else None)
-        data['hasFriendlyRating'].append(random.choices(column_values["hasFriendlyRating"])[0] if mask[2] >= percent_missing_val else None)        
-        data['hasLifeSpan'].append(random.choices(column_values["hasLifeSpan"])[0] if mask[3] >= percent_missing_val else None)        
-        data['hasSize'].append(random.choices(column_values["hasSize"])[0] if mask[4] >= percent_missing_val else None)        
-        data['needsHoursOfExercicePerDay'].append(random.choices(column_values["needsHoursOfExercicePerDay"])[0] if mask[5] >= percent_missing_val else None)        
-        data['hasIntelligenceRating'].append(random.choices(column_values["hasIntelligenceRating"])[0] if mask[6] >= percent_missing_val else None)        
-        data['hasHealthIssuesRisk'].append(random.choices(column_values["hasHealthIssuesRisk"])[0] if mask[7] >= percent_missing_val else None)        
-        data['hasAverageWeight'].append(round(np.random.uniform(low=5, high=35), 2) if mask[8] >= percent_missing_val else None)        
-        data['hasTrainingDifficulty'].append(random.choices(column_values["hasTrainingDifficulty"])[0] if mask[9] >= percent_missing_val else None)
+        data['origin'].append(random.choices(column_values["origin"])[0])
+        data['type'].append(random.choices(column_values["type"])[0])
+        data['hasFriendlyRating'].append(random.choices(column_values["hasFriendlyRating"])[0])        
+        data['hasLifeSpan'].append(random.choices(column_values["hasLifeSpan"])[0])        
+        data['hasSize'].append(random.choices(column_values["hasSize"])[0])        
+        data['needsHoursOfExercicePerDay'].append(random.choices(column_values["needsHoursOfExercicePerDay"])[0])        
+        data['hasIntelligenceRating'].append(random.choices(column_values["hasIntelligenceRating"])[0])        
+        data['hasHealthIssuesRisk'].append(random.choices(column_values["hasHealthIssuesRisk"])[0])        
+        data['hasAverageWeight'].append(round(np.random.uniform(low=5, high=35), 2))        
+        data['hasTrainingDifficulty'].append(random.choices(column_values["hasTrainingDifficulty"])[0])
+
+    df = pd.DataFrame(data=data, columns=columns_names)
+
+    i = 0
+    for col in data_columns_names:
+        if n == 50: # These conditions ensures that 5% of the cells are None when n = 50
+            if i < 4:
+                df.loc[df.sample(frac=0.02).index, col] = None
+            if i >= 4:
+                df.loc[df.sample(frac=0.08).index, col] = None 
+            i += 1
+        else:
+            df.loc[df.sample(frac=0.05).index, col] = None 
         
-    return pd.DataFrame(data=data, columns=columns_names)
+        
+    return df
 
 
-# In[ ]:
+# In[8]:
 
 
 Path("./dataset").mkdir(parents=True, exist_ok=True)
@@ -85,8 +96,10 @@ dog_df = None
 for i in range(14):
     dog_df = generate_dogs(n)
 
+    missing_values = dog_df.isnull().sum().sum()
+
     dog_df.to_csv(f"./dataset/dogs_{n}.csv")
-    print(f"{n} dogs generated and saved in file dogs_{n}.csv")
+    print(f"{n} dogs generated and saved in file dogs_{n}.csv. Missing values : {missing_values} ({100 * missing_values / (n * 8)}%)")
     print()
 
     n *= 2
