@@ -10,10 +10,10 @@ util:
     inference: false
 
 example:
-  kb: ./evaluation/KB/dogs_204800.ttl
+  kb: ./evaluation/KB/dogs_50.ttl
   save: true
   path: new_KB.ttl
-  displayInferredAxioms : false
+  displayInferredAxioms : True
 
 stups:
   kb: ./ontologies/populated_STUPS.ttl
