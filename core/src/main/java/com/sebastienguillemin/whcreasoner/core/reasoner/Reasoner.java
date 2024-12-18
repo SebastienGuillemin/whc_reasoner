@@ -116,8 +116,11 @@ public class Reasoner {
 
                     // Adding inferred axioms to inferredAxiomsForCurrentRule
                     if (temp != null) {
+                        Logger.logInference("####### Proven at this iteration : " + temp, 0);
                         this.inferredAxioms.addAll(temp);
                         inferredAxiomsForCurrentRule.addAll(temp);
+                    } else {
+                        Logger.logInference("####### Nothing proven at the iteration.", 0);
                     }
 
                     pb.step();
@@ -183,7 +186,7 @@ public class Reasoner {
 
         // --- IF CURRENT DEPTH > MAX_DEPTH THEN RETURNS EMPTY SET
         if (depth > MAX_DEPTH)
-            return new TreeSet<>();
+            return null;
 
         // --- TRY TO PROVE GOAL USING VARIABLE SUBSTITUTIONS
         BindingManager variableSubstitutions = new BindingManager(this.findVariableSubstitutions(goal));
@@ -225,7 +228,7 @@ public class Reasoner {
         Logger.logInference(goal + " is not satisfied (" + depth + ")", depth);
         if (substRule == null || !(goal instanceof DataPropertyAtom) && !goal.allVariablesBound()) {
             Logger.logInference("Stopping as goal : " + goal + " cannot be proven and no rule substitution exists.", depth);
-            return res;
+            return null;
         }
 
         // --- IF GOAL CANNOT BE SATISFIED THEN DECREASE WEIGHT

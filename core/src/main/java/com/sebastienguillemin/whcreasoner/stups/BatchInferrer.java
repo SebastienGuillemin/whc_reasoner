@@ -30,7 +30,7 @@ public class BatchInferrer {
         RuleParser parser = new RuleParser(ontologyWrapper);
 
         // Parse rules
-        Rule rule = parser.parseRule(args[1], propertiesReader.getPropertyValue("rules." + args[1]));
+        Rule rule = parser.parseRule(args[1], propertiesReader.getPropertyValue("rules.stups." + args[1]));
         reasoner.addRule(rule);
 
         // Infer
