@@ -5,7 +5,7 @@ import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import com.sebastienguillemin.whcreasoner.core.entities.atom.imp.AbstractBuiltInAtom;
 import com.sebastienguillemin.whcreasoner.core.parser.BuiltInReference;
 
-public class DifferentFrom extends AbstractBuiltInAtom{
+public class DifferentFrom extends AbstractBuiltInAtom {
     public DifferentFrom() {
         super(BuiltInReference.DIFFERENT_FROM.getIri());
         this.arity = 2;

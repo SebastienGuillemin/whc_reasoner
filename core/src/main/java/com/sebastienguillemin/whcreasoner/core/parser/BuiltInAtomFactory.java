@@ -4,6 +4,7 @@ import org.semanticweb.owlapi.model.IRI;
 
 import com.sebastienguillemin.whcreasoner.core.entities.atom.BuiltInAtom;
 import com.sebastienguillemin.whcreasoner.core.entities.atom.imp.builtin.DifferentFrom;
+import com.sebastienguillemin.whcreasoner.core.entities.atom.imp.builtin.FivePerCentDifferent;
 import com.sebastienguillemin.whcreasoner.core.entities.atom.imp.builtin.GreaterThanOrEqual;
 import com.sebastienguillemin.whcreasoner.core.entities.atom.imp.builtin.LessThanOrEqual;
 import com.sebastienguillemin.whcreasoner.core.entities.atom.imp.builtin.SameAs;
@@ -21,6 +22,9 @@ public class BuiltInAtomFactory {
 
         else if (atomIRI.equals(BuiltInReference.GREATER_THAN_EQUAL.getIri()))
             return new GreaterThanOrEqual();
+
+        else if (atomIRI.equals(BuiltInReference.FIVE_PER_CENT_DIFFERENT.getIri()))
+            return new FivePerCentDifferent();
 
         return null;
     }

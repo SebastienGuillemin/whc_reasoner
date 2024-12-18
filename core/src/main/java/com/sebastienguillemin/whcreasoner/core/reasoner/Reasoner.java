@@ -30,8 +30,6 @@ import com.sebastienguillemin.whcreasoner.core.exception.InvalidRuleException;
 import com.sebastienguillemin.whcreasoner.core.exception.OWLAxiomConversionException;
 import com.sebastienguillemin.whcreasoner.core.exception.VariableValueException;
 import com.sebastienguillemin.whcreasoner.core.util.Logger;
-import com.sebastienguillemin.whcreasoner.core.util.Util;
-
 import lombok.Getter;
 import me.tongfei.progressbar.ProgressBar;
 
@@ -175,7 +173,7 @@ public class Reasoner {
         Logger.logInference("Goals : " + goals, depth);
 
         // --- IF FIRST GOAL IS SATISFIED THEN PROVE FOR REMAINING GOALS
-        Atom goal = Util.pop(goals);
+        Atom goal = goals.pollFirst();
         if (this.satisfied(goal)) {
             Logger.logInference("Satisfied : " + goal, depth);
             return this.backwardChaining(goals, weight, substRule, depth);

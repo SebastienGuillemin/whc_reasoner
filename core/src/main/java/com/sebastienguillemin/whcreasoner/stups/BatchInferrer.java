@@ -14,9 +14,14 @@ public class BatchInferrer {
     private static PropertiesReader propertiesReader = PropertiesReader.getInstance();
 
     public static void main(String[] args) throws Exception {
+        if (args.length < 2) {
+            System.err.println("Require 2 arguments: KB name and rule name");
+            System.exit(1);
+        }
+
         // Load KB
         OntologyParser ontologyParser = new OntologyParser();
-        OWLOntology ontology = ontologyParser.parseTurtleOntology(propertiesReader.getPropertyValue("stups.kb"));
+        OWLOntology ontology = ontologyParser.parseTurtleOntology(args[0]);
         OntologyWrapper ontologyWrapper = new OntologyWrapper(ontology);
 
         Logger.logInfo("KB loaded. KB base IRI : " + ontologyWrapper.getBaseIRI() + "\n");
@@ -25,15 +30,21 @@ public class BatchInferrer {
         RuleParser parser = new RuleParser(ontologyWrapper);
 
         // Parse rules
-        Rule lot = parser.parseRule("lot", propertiesReader.getPropertyValue("rules.lot"));
-        reasoner.addRule(lot);
+        Rule rule = parser.parseRule(args[1], propertiesReader.getPropertyValue("rules." + args[1]));
+        reasoner.addRule(rule);
 
         // Infer
         reasoner.triggerRules();
         Logger.logInfo("Count of inferred axioms: " + reasoner.getInferredAxioms().size());
 
         // Save KB
-        ontologyWrapper.saveOntology(propertiesReader.getPropertyValue("stups.path"));
-        Logger.logInfo("New KB saved (path:" + propertiesReader.getPropertyValue("stups.path") + ")");
+        String newKBPath;
+        if (args.length == 3)
+            newKBPath = args[2];
+        else
+            newKBPath = propertiesReader.getPropertyValue("stups.path");
+
+        ontologyWrapper.saveOntology(newKBPath);
+        Logger.logInfo("New KB saved (path:" + propertiesReader.getPropertyValue("stups.path") + ").");
     }
 }

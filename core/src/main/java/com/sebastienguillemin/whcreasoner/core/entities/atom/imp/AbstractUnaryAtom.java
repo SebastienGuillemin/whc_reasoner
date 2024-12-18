@@ -65,14 +65,14 @@ public abstract class AbstractUnaryAtom extends BaseAtom implements UnaryAtom {
         return -1;
     }
 
-    @Override
-    public boolean equals(Object other) {
-        if (!(other instanceof UnaryAtom))
-            return false;
+    // @Override
+    // public boolean equals(Object other) {
+    //     if (!(other instanceof UnaryAtom))
+    //         return false;
 
-            UnaryAtom uAtom = (UnaryAtom) other;
-        return this.iri.equals(uAtom.getIRI()) && this.variable.compareTo(uAtom.getVariable()) == 0;
-    }
+    //         UnaryAtom uAtom = (UnaryAtom) other;
+    //     return this.iri.equals(uAtom.getIRI()) && this.variable.compareTo(uAtom.getVariable()) == 0;
+    // }
 
     protected void copyAttributes(AbstractUnaryAtom newAtom, HashMap<IRI, Variable> variables, boolean copyVariable) throws VariableValueException {
         super.copyAttributes(newAtom);

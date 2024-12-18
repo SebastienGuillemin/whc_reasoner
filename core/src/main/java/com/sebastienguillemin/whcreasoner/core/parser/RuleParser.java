@@ -32,6 +32,7 @@ import com.sebastienguillemin.whcreasoner.core.exception.URIReferenceException;
 import com.sebastienguillemin.whcreasoner.core.exception.VariableTypeException;
 import com.sebastienguillemin.whcreasoner.core.exception.VariableValueException;
 import com.sebastienguillemin.whcreasoner.core.exception.VariablesCountException;
+import com.sebastienguillemin.whcreasoner.core.util.Logger;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLLiteralImplBoolean;
 import uk.ac.manchester.cs.owl.owlapi.OWLLiteralImplDouble;
@@ -97,6 +98,8 @@ public class RuleParser {
 
         Rule rule = null;
         this.variables.clear();
+        
+        Logger.log("Parsing rule: " + ruleString);
 
         String[] ruleParts = ruleString.split("->");
 
@@ -190,7 +193,7 @@ public class RuleParser {
 
         String variablesPartsStr[] = variablesStr.split(",");
 
-        IRI atomIRI = this.createAomtIRI(IRIStr);
+        IRI atomIRI = this.createAtomeIRI(IRIStr);
 
         IRI.create(this.baseIRI + IRIStr);
         switch (variablesPartsStr.length) {
@@ -239,7 +242,7 @@ public class RuleParser {
         return atom;
     }
 
-    private IRI createAomtIRI(String IRIStr) throws RuleParsingException {
+    private IRI createAtomeIRI(String IRIStr) throws RuleParsingException {
         String[] IRIStrParts = IRIStr.split("\\:");
 
         if (IRIStrParts.length == 1)
@@ -318,7 +321,7 @@ public class RuleParser {
                 atom.addVariable(this.createIConstant(atom, variable2Name));
             else
                 atom.addVariable(this.createIVariable(checkAndClearVariableSyntaxe(variable2Name.trim()), atom));
-        } else if (atomIRI.equals(BuiltInReference.LESS_THAN_EQUAL.getIri()) || atomIRI.equals(BuiltInReference.GREATER_THAN_EQUAL.getIri())) {
+        } else if (atomIRI.equals(BuiltInReference.LESS_THAN_EQUAL.getIri()) || atomIRI.equals(BuiltInReference.GREATER_THAN_EQUAL.getIri()) || atomIRI.equals(BuiltInReference.FIVE_PER_CENT_DIFFERENT.getIri())) {
             if (variablesPartsStr.length != 2)
                 throw new RuleParsingException("Need exactly 2 variable to create '" + atomIRI + "' builtIn");
 

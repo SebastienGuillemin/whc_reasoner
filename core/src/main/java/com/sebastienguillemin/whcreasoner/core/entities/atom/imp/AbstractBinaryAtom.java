@@ -6,6 +6,7 @@ import java.util.Set;
 import org.semanticweb.owlapi.model.IRI;
 
 import com.google.common.collect.Sets;
+import com.sebastienguillemin.whcreasoner.core.entities.NamespacePrefix;
 import com.sebastienguillemin.whcreasoner.core.entities.atom.Atom;
 import com.sebastienguillemin.whcreasoner.core.entities.atom.BinaryAtom;
 import com.sebastienguillemin.whcreasoner.core.entities.atom.BuiltInAtom;
@@ -62,6 +63,9 @@ abstract class AbstractBinaryAtom extends BaseAtom implements BinaryAtom {
 
     @Override
     public int compareTo(Atom atomCompareTo) {
+        if (this.iri.equals(IRI.create(NamespacePrefix.SWRLB.toString() + "presentation"))) {
+            System.out.println("okok");
+        }
         if (atomCompareTo instanceof BuiltInAtom)
             if (((BuiltInAtom) atomCompareTo).allVariablesBound())
                 return 1;
@@ -84,6 +88,11 @@ abstract class AbstractBinaryAtom extends BaseAtom implements BinaryAtom {
         else {
             BinaryAtom binaryAtom = (BinaryAtom) atomCompareTo;
 
+            if (this.iri.equals(IRI.create(NamespacePrefix.SWRLB.toString() + "presentation"))) {
+                System.out.println(binaryAtom.getIRI());
+                System.out.println(this.iri.equals(atomCompareTo.getIRI()) && this.firstVariable.equals(binaryAtom.getFirstVariable()) && this.secondVariable.equals(binaryAtom.getSecondVariable()));
+            }
+
             if (this.iri.equals(atomCompareTo.getIRI()) && this.firstVariable.equals(binaryAtom.getFirstVariable()) && this.secondVariable.equals(binaryAtom.getSecondVariable()))
                 return 0;
 
@@ -96,14 +105,15 @@ abstract class AbstractBinaryAtom extends BaseAtom implements BinaryAtom {
         }
     }
 
-    @Override
-    public boolean equals(Object other) {
-        if (!(other instanceof AbstractBinaryAtom))
-            return false;
+    // @Override
+    // public boolean equals(Object other) {
+    //     if (!(other instanceof AbstractBinaryAtom))
+    //         return false;
 
-        AbstractBinaryAtom bAtom = (AbstractBinaryAtom) other;
-        return this.iri.equals(bAtom.getIRI()) && this.firstVariable.equals(bAtom.getFirstVariable()) && this.secondVariable.equals(bAtom.getSecondVariable());
-    }
+    //     AbstractBinaryAtom bAtom = (AbstractBinaryAtom) other;
+    //     System.out.println(this.iri + " " + bAtom.getIRI());
+    //     return this.iri.equals(bAtom.getIRI()) && this.firstVariable.equals(bAtom.getFirstVariable()) && this.secondVariable.equals(bAtom.getSecondVariable());
+    // }
 
     @Override
     public boolean allVariablesBound() {

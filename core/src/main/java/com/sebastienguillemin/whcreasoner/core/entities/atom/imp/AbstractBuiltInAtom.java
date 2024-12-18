@@ -87,13 +87,13 @@ public abstract class AbstractBuiltInAtom extends BaseAtom implements BuiltInAto
         return -1;
     }
 
-    @Override
-    public boolean equals(Object other) {
-        if (!(other instanceof BuiltInAtom))
-            return false;
+    // @Override
+    // public boolean equals(Object other) {
+    //     if (!(other instanceof BuiltInAtom))
+    //         return false;
 
-        return this.compareTo(((BuiltInAtom) other)) == 0;
-    }
+    //     return this.compareTo(((BuiltInAtom) other)) == 0;
+    // }
 
 
     @Override

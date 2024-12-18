@@ -9,17 +9,24 @@ function print_big_message {
 
 }
 
-if [[ $# -eq 0 ]] || [[ "$1" = "stups" ]]
+if [[ $# -eq 0 ]] || [[ "$1" = "stups_cannabis" ]]
 then
-    print_big_message "Running the stups batch inferrer program"
+    print_big_message "Running the stups batch inferrer program for Cannabis drug samples"
 
-    mvn clean install exec:java -Dexec.mainClass="com.sebastienguillemin.whcreasoner.stups.BatchInferrer" -f core/pom.xml
+    mvn clean install exec:java -Dexec.mainClass="com.sebastienguillemin.whcreasoner.stups.BatchInferrer" -f core/pom.xml -Dexec.args="populated_STUPS_cannabis.ttl lot_cannabis enriched_STUPS_cannabis.ttl"
+
+elif [[ "$1" = "stups_cocaine" ]]
+then
+    print_big_message "Running the stups batch inferrer program for Cocaine drug samples"
+
+    mvn clean install exec:java -Dexec.mainClass="com.sebastienguillemin.whcreasoner.stups.BatchInferrer" -f core/pom.xml -Dexec.args="populated_STUPS_cocaine.ttl lot_cocaine enriched_STUPS_cocaine.ttl"
 
 elif [[ "$1" = "example" ]]
 then
     print_big_message "Running the core example"
 
     mvn clean install exec:java -Dexec.mainClass="com.sebastienguillemin.whcreasoner.example.Example" -f core/pom.xml
+
 elif [[ "$1" = "dataset" ]]
 then
     print_big_message "Creating dataset"
@@ -34,6 +41,7 @@ then
         echo Processing $filename
         mvn exec:java -Dexec.mainClass="com.sebastienguillemin.whcreasoner.dataset.ConstructKB" -Dexec.args="$filename" -f core/pom.xml
     done
+
 elif [[ "$1" = "quantitative_evaluation" ]]
 then
     print_big_message "Running quantitative evaluation"
@@ -45,6 +53,7 @@ then
             mvn exec:java -Dexec.mainClass="com.sebastienguillemin.whcreasoner.evaluation.Eval" -Dexec.args="$filename" -f core/pom.xml
         done
     done
+
 elif [[ "$1" = "qualitative_evaluation" ]]
 then
     print_big_message "Running qualitative evaluation"
@@ -65,6 +74,7 @@ then
     cd swrl-benchmark
     ./run.sh
     cd ..
+
 else
     print_big_message "Unknown argument(s)"
 fi

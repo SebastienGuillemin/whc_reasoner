@@ -1,5 +1,8 @@
 rules:
-  lot: "Echantillon(?x)^Echantillon(?y)^owl:differentFrom(?x, ?y)^typeDrogue(?x,?dt)^typeDrogue(?y,?dt)^aPrincipeActif(?x,?pax)^aPrincipeActif(?y,?pay)^aFormeChimique(?pax,?cf)^aSubstance(?pax,?s)^aSubstance(?pay,?s)^forme(?x,?f)^forme(?y,?f)^aFormeChimique(?pay,?cf)^0.5*aAspectExterne(?x,?a)^0.5*aAspectExterne(?y,?a)^0.5*logo(?x,?l)^0.5*logo(?y,?l)->estProcheDe(?x,?y)[1]"
+  lot_cocaine: 'Echantillon(?x) ^ Echantillon(?y) ^ owl:differentFrom(?x, ?y) ^aPrincipeActif(?x, ?pax) ^aPrincipeActif(?y, ?pay) ^ dosage(?pax, ?dax) ^ dosage(?pay, ?day) ^ stups:fivePerCentDifferent(?dax, ?day) ^ 0.5 *aAspectExterne(?x, ?a) ^ 0.5 *aAspectExterne(?y, ?a) ^ 0.5 *couleur(?x, ?c) ^ couleur(?y, ?c) ^ 0.5 *ovule(?x, ?o) ^ ovule(?y, ?o) -> estProcheDe(?x, ?y)[0.8]'
+  
+  lot_cannabis: 'Echantillon(?x) ^ Echantillon(?y) ^ owl:differentFrom(?x, ?y) ^ aPrincipeActif(?x, ?pax) ^ aPrincipeActif(?y, ?pay) ^ dosage(?pax, ?dax) ^ dosage(?pay, ?day) ^ fivePerCentDifferent(?dax, ?day) ^ presentation(?x, ?pres) ^ presentation(?y, ?pres) ^ 0.75 * largeur(?x, ?lax) ^ 0.75 * largeur(?y, ?lay) ^ 0.75 * fivePerCentDifferent(?lax, ?lay) ^ 0.75 * longueur(?x, ?lox) ^ 0.75 * longueur(?y, ?loy) ^ 0.75 * fivePerCentDifferent(?lox, ?loy) ^ 0.75 * hauteur(?x, ?hx) ^ 0.75 * hauteur(?y, ?hy) ^ 0.75 * fivePerCentDifferent(?hx, ?hy) ^ 0.75 * masse(?x, ?mx) ^ 0.75 * hauteur(?y, ?my) ^ 0.75 * fivePerCentDifferent(?mx, ?my) ^ 0.5 * aAspectExterne(?x, ?a) ^ 0.5 * aAspectExterne(?y, ?a) ^ 0.5 * couleur(?x, ?c) ^ couleur(?y, ?c) ^ 0.5 * ovule(?x, ?o) ^ ovule(?y, ?o) -> estProcheDe(?x, ?y)[0.85]'
+  
   whc_1: 'origin(?x, England) ^ Hound(?x) ^ 0.6 * hasFriendlyRating(?x, "7"^^xsd:integer) ^ hasSize(?x, "Large"^^xsd:string) -> Otterhound(?x)[0.75]'
   whc_2: 'origin(?x, England) ^ Hound(?x) ^ 0.5 * hasFriendlyRating(?x, "7"^^xsd:integer) ^ 0.5 * hasSize(?x, "Large"^^xsd:string) ^ 0.5 * hasHealthIssuesRisk(?x, "Low"^^xsd:string) ^ hasAverageWeight(?x, ?w) ^ swrlb:greaterThanOrEqual(?w, "25"^^xsd:float) ^ swrlb:lessThanOrEqual(?w, "35"^^xsd:float) -> EnglishFoxhound(?x)[0.9]'
   whc_3: 'origin(?x, France) ^ 0.8 * hasFriendlyRating(?x, "9"^^xsd:integer)^ 0.4 * hasLifeSpan(?x, ?l) ^ 0.4 * swrlb:greaterThanOrEqual(?l, "13"^^xsd:integer) -> Toy(?x)[0.65]'
@@ -13,9 +16,8 @@ example:
   kb: ./evaluation/KB/dogs_50.ttl
   save: true
   path: new_KB.ttl
-  displayInferredAxioms : True
+  displayInferredAxioms: True
 
 stups:
-  kb: ./ontologies/populated_STUPS.ttl
   save: true
   path: enriched_STUPS.ttl
