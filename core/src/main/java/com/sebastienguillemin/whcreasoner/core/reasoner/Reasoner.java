@@ -84,15 +84,16 @@ public class Reasoner {
 
         // Process each rule
         for (Rule rule : rules) {
-            Logger.logInfo("Processing rule : " + rule);
+            Logger.logInfo("Processing rule : " + rule.getIRI().getFragment());
 
             // temp = Temp set (will contain set of inferred axioms for an hypotheses)
             // inferredAxiomsForCurrentRule = Set containing all inferred axioms for the
             // current rule
-            Set<OWLAxiom> temp, inferredAxiomsForCurrentRule = new HashSet<>();
-
+            Set<OWLAxiom> inferredAxiomsForCurrentRule = new HashSet<>();
+            
             // Find hypotheses
             Atom ruleHead = rule.getHead();
+            OWLAxiom inferredAxiom;
             BindingManager ruleGoals = new BindingManager(this.findGoals(ruleHead));
             try (ProgressBar pb = new ProgressBar(String.format("[Reasoner] Testing %s hypothesis for rule '%s'",
                     ruleGoals.getTotalIter(), rule.getIRI().getFragment()), ruleGoals.getTotalIter())) {
@@ -111,14 +112,13 @@ public class Reasoner {
 
                     // Try to prove hypothesis
                     Logger.logInference("####### PROVING  " + ruleHead, 0);
-                    temp = this.backwardChaining(new TreeSet<>(Arrays.asList(ruleHead)), 0, rule, 0);
-                    // System.exit(0);
 
                     // Adding inferred axioms to inferredAxiomsForCurrentRule
-                    if (temp != null) {
-                        Logger.logInference("####### Proven at this iteration : " + temp, 0);
-                        this.inferredAxioms.addAll(temp);
-                        inferredAxiomsForCurrentRule.addAll(temp);
+                    if (this.backwardChaining(new TreeSet<>(Arrays.asList(ruleHead)), 0, rule, 0)) {
+                        inferredAxiom = ruleHead.toOWLAxiom();
+                        Logger.logInference("####### Proven at this iteration : " + inferredAxiom, 0);
+                        this.inferredAxioms.add(inferredAxiom);
+                        inferredAxiomsForCurrentRule.add(inferredAxiom);
                     } else {
                         Logger.logInference("####### Nothing proven at the iteration.", 0);
                     }
@@ -164,13 +164,12 @@ public class Reasoner {
      * @throws BindingManagerException
      * @throws OWLAxiomConversionException
      */
-    private Set<OWLAxiom> backwardChaining(TreeSet<Atom> goals, float weight, Rule substRule, int depth)
+    private boolean backwardChaining(TreeSet<Atom> goals, float weight, Rule substRule, int depth)
             throws VariableValueException, BindingManagerException, OWLAxiomConversionException {
 
         // --- IF NO GOALS TO PROVE THEN RETURNS EMPTY SET
-        Set<OWLAxiom> res = new TreeSet<>();
         if (goals.size() == 0)
-            return res;
+            return true;
 
         Logger.skipLineInference();
         Logger.logInference("Goals : " + goals, depth);
@@ -186,7 +185,7 @@ public class Reasoner {
 
         // --- IF CURRENT DEPTH > MAX_DEPTH THEN RETURNS EMPTY SET
         if (depth > MAX_DEPTH)
-            return null;
+            return false;
 
         // --- TRY TO PROVE GOAL USING VARIABLE SUBSTITUTIONS
         BindingManager variableSubstitutions = new BindingManager(this.findVariableSubstitutions(goal));
@@ -195,11 +194,10 @@ public class Reasoner {
             // Bind goal's variable and infer remaining goals.
             variableSubstitutions.nextBinding();
             Logger.logInference("Binding variable in goal, becomes : " + goal + "(already satisfied)", depth);
-            res = this.backwardChaining(goals, weight, substRule, depth);
 
             // If remining goals are inferred
-            if (res != null)
-                return res;
+            if (this.backwardChaining(goals, weight, substRule, depth))
+                return true;
         }
 
         // UNBIND VARIABLE BIND WHEN TRYING VARIABLE SUBSTITUTIONS
@@ -212,23 +210,15 @@ public class Reasoner {
         for (Rule uSubstRule : this.findRuleSubstitutions(goal)) {
             Logger.logInference(String.format("Substitute %s by rule %s (%s)", goal, uSubstRule, depth), depth);
 
-            res = this.backwardChaining(new TreeSet<>(uSubstRule.getBody()), uSubstRule.getTotalWeight(), uSubstRule,
-                    depth + 1);
-            if (res != null) {
-                res.add(goal.toOWLAxiom());
-                Set<OWLAxiom> goalsInferences = this.backwardChaining(goals, weight, substRule, depth);
-
-                if (goalsInferences != null)
-                    res.addAll(goalsInferences);
-
-                return res;
+            if (this.backwardChaining(new TreeSet<>(uSubstRule.getBody()), uSubstRule.getTotalWeight(), uSubstRule, depth + 1)) {
+                return this.backwardChaining(goals, weight, substRule, depth);
             }
         }
 
         Logger.logInference(goal + " is not satisfied (" + depth + ")", depth);
         if (substRule == null || !(goal instanceof DataPropertyAtom) && !goal.allVariablesBound()) {
             Logger.logInference("Stopping as goal : " + goal + " cannot be proven and no rule substitution exists.", depth);
-            return null;
+            return false;
         }
 
         // --- IF GOAL CANNOT BE SATISFIED THEN DECREASE WEIGHT
@@ -237,7 +227,7 @@ public class Reasoner {
         float newWeight = weight - goal.getWeight();
         if (newWeight / substRule.getTotalWeight() < substRule.getThreshold()) {
             Logger.logInference("Fail" + ((depth == 0) ? "\n" : ""), depth);
-            return null;
+            return false;
         }
 
         return this.backwardChaining(goals, newWeight, substRule, depth);
