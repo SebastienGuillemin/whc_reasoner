@@ -6,9 +6,9 @@ import com.sebastienguillemin.whcreasoner.core.entities.atom.imp.AbstractBuiltIn
 import com.sebastienguillemin.whcreasoner.core.parser.BuiltInReference;
 
 
-public class FivePerCentDifferent extends AbstractBuiltInAtom {
-    public FivePerCentDifferent() {
-        super(BuiltInReference.FIVE_PER_CENT_DIFFERENT.getIri());
+public class LessThanfivePerCent extends AbstractBuiltInAtom {
+    public LessThanfivePerCent() {
+        super(BuiltInReference.LESS_THAN_FIVE_PERCENT.getIri());
         this.arity = 2;
     }
 
@@ -28,7 +28,7 @@ public class FivePerCentDifferent extends AbstractBuiltInAtom {
 
     @Override
     protected AbstractBuiltInAtom copyBuiltin() {
-        return new FivePerCentDifferent();
+        return new LessThanfivePerCent();
     }
     
 }

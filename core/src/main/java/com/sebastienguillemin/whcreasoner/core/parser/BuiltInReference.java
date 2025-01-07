@@ -12,7 +12,7 @@ public enum BuiltInReference {
     DIFFERENT_FROM(IRI.create(NamespacePrefix.OWL.getCompleteIRI() + "differentFrom")),
     LESS_THAN_EQUAL(IRI.create(NamespacePrefix.SWRLB.getCompleteIRI() + "lessThanOrEqual")),
     GREATER_THAN_EQUAL(IRI.create(NamespacePrefix.SWRLB.getCompleteIRI() + "greaterThanOrEqual")),
-    FIVE_PER_CENT_DIFFERENT(IRI.create(NamespacePrefix.STUPS.getCompleteIRI() + "fivePerCentDifferent"));
+    LESS_THAN_FIVE_PERCENT(IRI.create(NamespacePrefix.STUPS.getCompleteIRI() + "lessThanfivePercent"));
 
     private IRI iri;
 
