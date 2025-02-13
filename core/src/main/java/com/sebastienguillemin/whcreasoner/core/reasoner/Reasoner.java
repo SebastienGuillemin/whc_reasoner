@@ -123,7 +123,7 @@ public class Reasoner {
                         inferredAxiom = ruleHead.toOWLAxiom();
                         Logger.logInference("####### Proven at this iteration : " + inferredAxiom, 0);
                         this.inferredAxioms.add(inferredAxiom);
-                        this.satisfiedAtomCauses.put(ruleHead, causes);
+                        this.satisfiedAtomCauses.put(ruleHead.copy(), causes);
                         inferredAxiomsForCurrentRule.add(inferredAxiom);
                     } else {
                         Logger.logInference("####### Nothing proven at the iteration.", 0);
@@ -184,7 +184,7 @@ public class Reasoner {
         Atom goal = goals.pollFirst();
         if (this.satisfied(goal)) {
             Logger.logInference("Satisfied : " + goal, depth);
-            causes.add(goal);
+            causes.add(goal.copy());
             return this.backwardChaining(goals, weight, substRule, depth, causes);
         }
         Logger.logInference("Not satisfied : " + goal, depth);
@@ -204,7 +204,7 @@ public class Reasoner {
 
             // If remining goals are inferred
             if (this.backwardChaining(goals, weight, substRule, depth, causes)) {
-                causes.add(goal);
+                causes.add(goal.copy());
                 return true;
             }
         }
@@ -220,7 +220,7 @@ public class Reasoner {
             Logger.logInference(String.format("Substitute %s by rule %s (%s)", goal, uSubstRule, depth), depth);
 
             if (this.backwardChaining(new TreeSet<>(uSubstRule.getBody()), uSubstRule.getTotalWeight(), uSubstRule, depth + 1, causes)) {
-                causes.add(goal);
+                causes.add(goal.copy());
                 return this.backwardChaining(goals, weight, substRule, depth, causes);
             }
         }

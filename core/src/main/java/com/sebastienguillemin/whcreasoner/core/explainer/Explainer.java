@@ -15,7 +15,7 @@ public class Explainer {
 
             String atomPrettyString = atom.toPrettyString();
 
-            explanations += atomPrettyString + "because:\n";
+            explanations += atomPrettyString + " because:\n";
 
             for (Atom cause : causes) {
                 String causePrettyString = cause.toPrettyString();

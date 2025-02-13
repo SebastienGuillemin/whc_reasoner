@@ -27,7 +27,7 @@ public class SameAs extends AbstractBuiltInAtom {
 
     public String toPrettyString() {
         Variable firstVariable = this.variables.get(0);
-        Variable secondVariable = this.variables.get(0);
+        Variable secondVariable = this.variables.get(1);
 
         return 
             ((OWLNamedIndividual) firstVariable.getValue()).getIRI().getFragment() + " and " +

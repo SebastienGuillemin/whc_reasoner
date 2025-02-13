@@ -40,8 +40,17 @@ public interface Atom extends NamedEntity, Comparable<Atom> {
      * @param copyNullVariable If true copy null-valued variable. If false, create a
      *                         new instance of each null-values variable.
      * @return A new Atom instance.
+     * @throws VariableValueException when an error occurs when copying a variable.
      */
     Atom copy(HashMap<IRI, Variable> variables, boolean copyVariable) throws VariableValueException;
+
+    /**
+     * Copy an atom with all its variables.
+     * 
+     * @return A new Atom instance.
+     * @throws VariableValueException when an error occurs when copying a variable.
+     */
+    Atom copy() throws VariableValueException;
 
     String toPrettyString();
 

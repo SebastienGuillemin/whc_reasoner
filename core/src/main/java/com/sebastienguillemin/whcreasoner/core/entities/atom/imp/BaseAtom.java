@@ -1,5 +1,6 @@
 package com.sebastienguillemin.whcreasoner.core.entities.atom.imp;
 
+import java.util.HashMap;
 import java.util.UUID;
 
 import org.semanticweb.owlapi.model.IRI;
@@ -10,6 +11,7 @@ import com.sebastienguillemin.whcreasoner.core.entities.atom.Atom;
 import com.sebastienguillemin.whcreasoner.core.entities.variable.Variable;
 import com.sebastienguillemin.whcreasoner.core.exception.AtomWeightException;
 import com.sebastienguillemin.whcreasoner.core.exception.OWLAxiomConversionException;
+import com.sebastienguillemin.whcreasoner.core.exception.VariableValueException;
 
 import lombok.Getter;
 
@@ -42,6 +44,11 @@ abstract class BaseAtom extends BaseEntity implements Atom {
         if (weight <= 0 || weight > 1)  
             throw new AtomWeightException(weight);
         this.weight = weight;
+    }
+
+    @Override
+    public Atom copy() throws VariableValueException {
+        return this.copy(new HashMap<>(), true);
     }
 
     @Override

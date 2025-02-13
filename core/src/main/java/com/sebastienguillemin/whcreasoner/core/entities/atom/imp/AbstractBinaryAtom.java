@@ -120,7 +120,6 @@ abstract class AbstractBinaryAtom extends BaseAtom implements BinaryAtom {
         return (this.firstVariable.hasValue()) && (this.secondVariable.hasValue());
     }
 
-
     protected void copyAttributes(AbstractBinaryAtom newAtom, HashMap<IRI, Variable> variables, boolean copyVariable) throws VariableValueException {
         super.copyAttributes(newAtom);
 
