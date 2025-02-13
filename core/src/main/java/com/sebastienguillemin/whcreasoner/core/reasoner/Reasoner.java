@@ -48,6 +48,9 @@ public class Reasoner {
     private Hashtable<IRI, Integer> inferredAxiomsPerRule;
 
     @Getter
+    private Hashtable<Atom, Set<Atom>> satisfiedAtomCauses;
+
+    @Getter
     private Set<OWLAxiom> inferredAxioms;
     public long addingInferredAxiomsTime;
 
@@ -61,6 +64,7 @@ public class Reasoner {
         this.rules = new HashSet<>();
         this.inferredAxiomsPerRule = new Hashtable<>();
         this.inferredAxioms = new HashSet<>();
+        this.satisfiedAtomCauses = new Hashtable<>();
         this.addingInferredAxiomsTime = 0l;
     }
 
@@ -114,10 +118,12 @@ public class Reasoner {
                     Logger.logInference("####### PROVING  " + ruleHead, 0);
 
                     // Adding inferred axioms to inferredAxiomsForCurrentRule
-                    if (this.backwardChaining(new TreeSet<>(Arrays.asList(ruleHead)), 0, rule, 0)) {
+                    Set<Atom> causes = new HashSet<>();
+                    if (this.backwardChaining(new TreeSet<>(Arrays.asList(ruleHead)), 0, rule, 0, causes)) {
                         inferredAxiom = ruleHead.toOWLAxiom();
                         Logger.logInference("####### Proven at this iteration : " + inferredAxiom, 0);
                         this.inferredAxioms.add(inferredAxiom);
+                        this.satisfiedAtomCauses.put(ruleHead, causes);
                         inferredAxiomsForCurrentRule.add(inferredAxiom);
                     } else {
                         Logger.logInference("####### Nothing proven at the iteration.", 0);
@@ -164,7 +170,7 @@ public class Reasoner {
      * @throws BindingManagerException
      * @throws OWLAxiomConversionException
      */
-    private boolean backwardChaining(TreeSet<Atom> goals, float weight, Rule substRule, int depth)
+    private boolean backwardChaining(TreeSet<Atom> goals, float weight, Rule substRule, int depth, Set<Atom> causes)
             throws VariableValueException, BindingManagerException, OWLAxiomConversionException {
 
         // --- IF NO GOALS TO PROVE THEN RETURNS EMPTY SET
@@ -178,7 +184,8 @@ public class Reasoner {
         Atom goal = goals.pollFirst();
         if (this.satisfied(goal)) {
             Logger.logInference("Satisfied : " + goal, depth);
-            return this.backwardChaining(goals, weight, substRule, depth);
+            causes.add(goal);
+            return this.backwardChaining(goals, weight, substRule, depth, causes);
         }
         Logger.logInference("Not satisfied : " + goal, depth);
 
@@ -196,8 +203,10 @@ public class Reasoner {
             Logger.logInference("Binding variable in goal, becomes : " + goal + "(already satisfied)", depth);
 
             // If remining goals are inferred
-            if (this.backwardChaining(goals, weight, substRule, depth))
+            if (this.backwardChaining(goals, weight, substRule, depth, causes)) {
+                causes.add(goal);
                 return true;
+            }
         }
 
         // UNBIND VARIABLE BIND WHEN TRYING VARIABLE SUBSTITUTIONS
@@ -210,8 +219,9 @@ public class Reasoner {
         for (Rule uSubstRule : this.findRuleSubstitutions(goal)) {
             Logger.logInference(String.format("Substitute %s by rule %s (%s)", goal, uSubstRule, depth), depth);
 
-            if (this.backwardChaining(new TreeSet<>(uSubstRule.getBody()), uSubstRule.getTotalWeight(), uSubstRule, depth + 1)) {
-                return this.backwardChaining(goals, weight, substRule, depth);
+            if (this.backwardChaining(new TreeSet<>(uSubstRule.getBody()), uSubstRule.getTotalWeight(), uSubstRule, depth + 1, causes)) {
+                causes.add(goal);
+                return this.backwardChaining(goals, weight, substRule, depth, causes);
             }
         }
 
@@ -230,7 +240,7 @@ public class Reasoner {
             return false;
         }
 
-        return this.backwardChaining(goals, newWeight, substRule, depth);
+        return this.backwardChaining(goals, newWeight, substRule, depth, causes);
     }
 
     private boolean satisfied(Atom atom) {

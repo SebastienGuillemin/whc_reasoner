@@ -53,4 +53,12 @@ public class DataPropertyAtom extends AbstractBinaryAtom {
 
         return newAtom;
     }
+
+    @Override
+    public String toPrettyString() {
+        return
+            ((OWLNamedIndividual) this.firstVariable.getValue()).getIRI().getFragment() + " " +
+            this.getIRI().getFragment() + " " +
+            ((OWLLiteral) this.secondVariable.getValue()).getLiteral();
+    }
 }

@@ -14,6 +14,6 @@ public class ConstructKB {
         String csvFileName = args[0];
 
         OntologyWrapper ontology = CSVUtil.dogsCSVToKB(csvFileName, "ontologies/dog_breeds_ontology.ttl", "http://www.sebastienguillemin.com/dogs#");
-        ontology.saveOntology("evaluation/KB/" + csvFileName.split("/")[3].split("\\.")[0] + ".ttl");
+        ontology.saveOntology("evaluation/KB/" + csvFileName.split("/")[2].split("\\.")[0] + ".ttl");
     }
 }

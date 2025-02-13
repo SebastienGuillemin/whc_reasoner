@@ -3,6 +3,7 @@ package com.sebastienguillemin.whcreasoner.core.entities.atom.imp.builtin;
 import org.semanticweb.owlapi.model.OWLLiteral;
 
 import com.sebastienguillemin.whcreasoner.core.entities.atom.imp.AbstractBuiltInAtom;
+import com.sebastienguillemin.whcreasoner.core.entities.variable.Variable;
 import com.sebastienguillemin.whcreasoner.core.parser.BuiltInReference;
 
 
@@ -31,4 +32,16 @@ public class LessThanfivePerCent extends AbstractBuiltInAtom {
         return new LessThanfivePerCent();
     }
     
+    public String toPrettyString() {
+        Variable firstVariable = this.variables.get(0);
+        Variable secondVariable = this.variables.get(0);
+
+        return 
+            (firstVariable.isConstant() ? "" : firstVariable.getIRI().getFragment() + "=") +
+            ((OWLLiteral) firstVariable.getValue()).getLiteral() + 
+            " and " +
+            (secondVariable.isConstant() ? "" : secondVariable.getIRI().getFragment() + "=") +
+            ((OWLLiteral) secondVariable.getValue()).getLiteral() +
+            " are less than 5% different";
+    }
 }

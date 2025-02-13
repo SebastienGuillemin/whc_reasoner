@@ -40,15 +40,17 @@ import uk.ac.manchester.cs.owl.owlapi.OWLObjectPropertyImpl;
  */
 public class CSVUtil {
     public static OntologyWrapper dogsCSVToKB(String CSVFileName, String ontologyFileName, String baseIRI) throws OWLOntologyCreationException, FileNotFoundException, IOException {
-        System.out.println(CSVFileName);
+        String workingDirectory = System.getProperty("user.dir");
         OntologyParser ontoParser = new OntologyParser();
         OWLOntology ontology = ontoParser.parseTurtleOntology(ontologyFileName);
         Logger.log("Ontology parsed.");
         OntologyWrapper wrapper = new OntologyWrapper(ontology);
 
-        Logger.log("Converting " + CSVFileName + " to KB.");
+        String completePath = workingDirectory + "/" + CSVFileName;
+
+        Logger.log("Converting " + completePath + " to KB.");
         List<List<String>> records = new ArrayList<>();
-        try (BufferedReader br = new BufferedReader(new FileReader(CSVFileName))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(completePath))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] values = line.split(",");
@@ -74,6 +76,10 @@ public class CSVUtil {
 
         OWLIndividual individual;
         for (List<String> record : records) {
+            // CSV file can contain a final empty line
+            if (record.equals("") || record == null)
+                continue;
+
             // Create individual
             individual = new OWLNamedIndividualImpl(IRI.create(baseIRI + record.get(1)));
 

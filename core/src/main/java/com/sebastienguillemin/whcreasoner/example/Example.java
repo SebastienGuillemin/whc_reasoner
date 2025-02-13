@@ -1,14 +1,13 @@
 package com.sebastienguillemin.whcreasoner.example;
 
-import java.util.Map.Entry;
 import java.util.Set;
 
-import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
 
 import com.sebastienguillemin.whcreasoner.core.entities.OntologyWrapper;
 import com.sebastienguillemin.whcreasoner.core.entities.rule.Rule;
+import com.sebastienguillemin.whcreasoner.core.explainer.Explainer;
 import com.sebastienguillemin.whcreasoner.core.parser.OntologyParser;
 import com.sebastienguillemin.whcreasoner.core.parser.RuleParser;
 import com.sebastienguillemin.whcreasoner.core.reasoner.Reasoner;
@@ -59,9 +58,9 @@ public class Example {
 
         System.out.println();
 
-        for(Entry<IRI, Integer> entry : reasoner.getInferredAxiomsPerRule().entrySet()) {
-            Logger.log("Axioms inferred for rule " + entry.getKey() + " : " + entry.getValue());
-        }
+        Explainer explainer = new Explainer();
+
+        System.out.println(explainer.explain(reasoner.getSatisfiedAtomCauses())); 
 
         // Save KB
         if (propertiesReader.getPropertyValueBoolean("example.save"))

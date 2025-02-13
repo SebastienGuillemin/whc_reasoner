@@ -43,5 +43,7 @@ public interface Atom extends NamedEntity, Comparable<Atom> {
      */
     Atom copy(HashMap<IRI, Variable> variables, boolean copyVariable) throws VariableValueException;
 
+    String toPrettyString();
+
     boolean allVariablesBound();
 }

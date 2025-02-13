@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLLiteral;
 
 import com.sebastienguillemin.whcreasoner.core.entities.atom.Atom;
 import com.sebastienguillemin.whcreasoner.core.entities.variable.DVariable;
@@ -41,5 +42,10 @@ public class DatatypeAtom extends AbstractUnaryAtom {
         super.copyAttributes(newAtom, variables, copyVariable);
 
         return newAtom;
+    }
+
+    @Override
+    public String toPrettyString() {
+        return ((OWLLiteral) this.variable.getValue()).getLiteral() + " is a " + this.getIRI().getFragment();
     }
 }

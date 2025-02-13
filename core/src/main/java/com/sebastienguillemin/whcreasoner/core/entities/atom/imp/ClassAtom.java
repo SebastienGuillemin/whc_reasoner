@@ -49,4 +49,9 @@ public class ClassAtom extends AbstractUnaryAtom {
 
         return newAtom;
     }
+
+    @Override
+    public String toPrettyString() {
+        return ((OWLNamedIndividual) this.variable.getValue()).getIRI() + " is a " + this.getIRI().getFragment();
+    }
 }
