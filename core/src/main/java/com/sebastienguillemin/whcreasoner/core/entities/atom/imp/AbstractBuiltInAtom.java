@@ -61,7 +61,8 @@ public abstract class AbstractBuiltInAtom extends BaseAtom implements BuiltInAto
         Variable variable;
         while (i.hasNext()) {
             variable = i.next();
-            str += (variable.isConstant()) ? variable.getValue().toString() : variable.toShortString() + ((i.hasNext()) ? ", " : "");
+            str += (variable.isConstant()) ? variable.getValue().toString() : variable.toShortString();
+            str += i.hasNext() ? ", " : "";
         }
 
         return str;

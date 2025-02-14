@@ -34,6 +34,8 @@ public class DiffValuesIn extends AbstractBuiltInAtom {
 
         float diff = MathUtil.computeDiffPercentage(value1, value2);
 
+        System.out.println("Diff " + value1 + ", " + value2 + " = " + diff);
+
         return "difference between " + value1 + " and " + value2 + " (" + diff + "%) in [" + lowerBound + "; " + upperBound + "]"; 
     }
 
