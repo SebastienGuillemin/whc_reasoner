@@ -1,5 +1,11 @@
 package com.sebastienguillemin.whcreasoner.stups;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.semanticweb.owlapi.model.OWLOntology;
 
 import com.sebastienguillemin.whcreasoner.core.entities.OntologyWrapper;
@@ -13,9 +19,21 @@ import com.sebastienguillemin.whcreasoner.core.util.PropertiesReader;
 public class BatchInferrer {
     private static PropertiesReader propertiesReader = PropertiesReader.getInstance();
 
+    private static List<String> readRules(String filePath) throws IOException {
+        List<String> rules = new ArrayList<>();
+
+        try(BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            for(String line; (line = br.readLine()) != null; ) {
+                rules.add(line);
+            }
+        }
+
+        return rules;
+    }
+
     public static void main(String[] args) throws Exception {
         if (args.length < 2) {
-            System.err.println("Require 2 arguments: KB name and rule name");
+            System.err.println("Require 2 arguments: KB name and rule file path");
             System.exit(1);
         }
 
@@ -30,8 +48,12 @@ public class BatchInferrer {
         RuleParser parser = new RuleParser(ontologyWrapper);
 
         // Parse rules
-        Rule rule = parser.parseRule(args[1], propertiesReader.getPropertyValue("rules.stups." + args[1]));
-        reasoner.addRule(rule);
+        int ruleCount = 1;
+        for (String ruleStr : readRules(args[1])) {
+            Rule rule = parser.parseRule("rule_" + (ruleCount++), ruleStr);
+            Logger.log("Rule parsed: " + rule);
+            reasoner.addRule(rule);
+        }
 
         // Infer
         reasoner.triggerRules();

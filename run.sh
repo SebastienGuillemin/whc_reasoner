@@ -9,11 +9,11 @@ function print_big_message {
 
 }
 
-if [[ $# -eq 0 ]] || [[ "$1" = "stups_cannabis" ]]
+if [[ $# -eq 0 ]] || [[ "$1" = "stups" ]]
 then
     print_big_message "Running the stups batch inferrer program for Cannabis drug samples"
 
-    mvn clean install exec:java -Dexec.mainClass="com.sebastienguillemin.whcreasoner.stups.BatchInferrer" -f core/pom.xml -Dexec.args="populated_STUPS_cannabis.ttl lot_cannabis enriched_STUPS_cannabis.ttl"
+    mvn clean install exec:java -Dexec.mainClass="com.sebastienguillemin.whcreasoner.stups.BatchInferrer" -f core/pom.xml -Dexec.args="KB.ttl forensic_rules.txt"
 
 elif [[ "$1" = "example" ]]
 then

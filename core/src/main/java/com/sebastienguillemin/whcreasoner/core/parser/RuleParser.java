@@ -32,7 +32,6 @@ import com.sebastienguillemin.whcreasoner.core.exception.URIReferenceException;
 import com.sebastienguillemin.whcreasoner.core.exception.VariableTypeException;
 import com.sebastienguillemin.whcreasoner.core.exception.VariableValueException;
 import com.sebastienguillemin.whcreasoner.core.exception.VariablesCountException;
-import com.sebastienguillemin.whcreasoner.core.util.Logger;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLLiteralImplBoolean;
 import uk.ac.manchester.cs.owl.owlapi.OWLLiteralImplDouble;
@@ -98,8 +97,6 @@ public class RuleParser {
 
         Rule rule = null;
         this.variables.clear();
-        
-        Logger.log("Parsing rule: " + ruleString);
 
         String[] ruleParts = ruleString.split("->");
 
@@ -181,7 +178,7 @@ public class RuleParser {
         Atom atom;
 
         Pattern pattern = Pattern
-                .compile("(([0-1](\\.[0-9]+)?) ?\\* ?)?" + "([a-zA-Z]+(\\:[a-zA-Z]+)*)" + "\\(([\\?, a-zA-Z0-9\\\"~\\:]+)\\)");
+                .compile("(([0-1](\\.[0-9]+)?) ?\\* ?)?" + "([a-zA-Z]+(\\:[a-zA-Z]+)*)" + "\\(([\\?, a-zA-Z0-9\\\"~\\:\\.]+)\\)");
         Matcher matcher = pattern.matcher(atomStr);
 
         if (!matcher.matches())
@@ -306,11 +303,12 @@ public class RuleParser {
             throws RuleParsingException, VariableTypeException, URIReferenceException, VariableValueException, VariablesCountException {
         IRI atomIRI = atom.getIRI();
 
-        String variable1Name = variablesPartsStr[0].trim();
-        String variable2Name = variablesPartsStr[1].trim();
         if (atomIRI.equals(BuiltInReference.SAME_AS.getIri()) || atomIRI.equals(BuiltInReference.DIFFERENT_FROM.getIri())) {
             if (variablesPartsStr.length != 2)
-                throw new RuleParsingException("Need exactly 2 variable to create '"+ atomIRI +"' builtIn");
+                throw new RuleParsingException("Need exactly 2 variables to create '"+ atomIRI +"' builtIn");
+            
+            String variable1Name = variablesPartsStr[0].trim();
+            String variable2Name = variablesPartsStr[1].trim();
 
             if (isAConstant(variable1Name))
                 atom.addVariable(this.createIConstant(atom, variable1Name));
@@ -321,9 +319,12 @@ public class RuleParser {
                 atom.addVariable(this.createIConstant(atom, variable2Name));
             else
                 atom.addVariable(this.createIVariable(checkAndClearVariableSyntaxe(variable2Name.trim()), atom));
-        } else if (atomIRI.equals(BuiltInReference.LESS_THAN_EQUAL.getIri()) || atomIRI.equals(BuiltInReference.GREATER_THAN_EQUAL.getIri()) || atomIRI.equals(BuiltInReference.LESS_THAN_FIVE_PERCENT.getIri())) {
+        } else if (atomIRI.equals(BuiltInReference.LESS_THAN_EQUAL.getIri()) || atomIRI.equals(BuiltInReference.GREATER_THAN_EQUAL.getIri()) || atomIRI.equals(BuiltInReference.LESS_THAN_FIVE_PERCENT.getIri()) || atomIRI.equals(BuiltInReference.DATE_DIFF_GREATER_THAN_SIX_MONTHS.getIri()) || atomIRI.equals(BuiltInReference.DATE_DIFF_LESS_EQUAL_THAN_SIX_MONTHS.getIri())) {
             if (variablesPartsStr.length != 2)
-                throw new RuleParsingException("Need exactly 2 variable to create '" + atomIRI + "' builtIn");
+                throw new RuleParsingException("Need exactly 2 variables to create '" + atomIRI + "' builtIn");
+
+            String variable1Name = variablesPartsStr[0].trim();
+            String variable2Name = variablesPartsStr[1].trim();
 
             if (isAConstant(variable1Name))
                 atom.addVariable(this.createDConstant(atom, variable1Name));
@@ -335,6 +336,40 @@ public class RuleParser {
             }
             else {
                 atom.addVariable(this.createDVariable(checkAndClearVariableSyntaxe(variable2Name.trim()), atom));
+            }
+        } else if (atomIRI.equals(BuiltInReference.DIFF_VALUES_IN.getIri())) {
+            if (variablesPartsStr.length != 4)
+                throw new RuleParsingException("Need exactly 4 variables to create '" + atomIRI + "' builtIn");
+
+            String variable1Name = variablesPartsStr[0].trim();
+            String variable2Name = variablesPartsStr[1].trim();
+            String variable3Name = variablesPartsStr[2].trim();
+            String variable4Name = variablesPartsStr[3].trim();
+
+            if (isAConstant(variable1Name))
+                atom.addVariable(this.createDConstant(atom, variable1Name));
+            else
+                atom.addVariable(this.createDVariable(checkAndClearVariableSyntaxe(variable1Name.trim()), atom));
+            
+            if (isAConstant(variable2Name)) {
+                atom.addVariable(this.createDConstant(atom, variable2Name));
+            }
+            else {
+                atom.addVariable(this.createDVariable(checkAndClearVariableSyntaxe(variable2Name.trim()), atom));
+            }
+
+            if (isAConstant(variable3Name)) {
+                atom.addVariable(this.createDConstant(atom, variable3Name));
+            }
+            else {
+                atom.addVariable(this.createDVariable(checkAndClearVariableSyntaxe(variable3Name.trim()), atom));
+            }
+
+            if (isAConstant(variable4Name)) {
+                atom.addVariable(this.createDConstant(atom, variable4Name));
+            }
+            else {
+                atom.addVariable(this.createDVariable(checkAndClearVariableSyntaxe(variable4Name.trim()), atom));
             }
         }
     }
