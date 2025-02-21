@@ -22,6 +22,8 @@ public class DiffValuesIn extends AbstractBuiltInAtom {
 
         float diff = MathUtil.computeDiffPercentage(value1, value2);
 
+        System.out.println(lowerBound + ", " + upperBound);
+
         return lowerBound <= diff && diff <= upperBound;
     }
 
