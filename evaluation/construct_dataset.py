@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[ ]:
 
 
 import pandas as pd
@@ -13,7 +13,7 @@ from pathlib import Path
 random.seed(0)
 
 
-# In[2]:
+# In[ ]:
 
 
 column_values = {}
@@ -21,7 +21,7 @@ column_values = {}
 column_values["hasHealthIssuesRisk"] = ["Low", "Moderate", "High"]
 column_values["hasSize"] = ["Small-Medium", "Medium", "Large", "Small", "Toy"]
 
-column_values["hasFriendlyRating"] = list(range(1, 11)) 
+column_values["hasFriendlyRating"] = list(range(1, 11))
 column_values["hasLifeSpan"] = list(range(5, 21))
 column_values["hasIntelligenceRating"] = list(range(1, 11))
 column_values["hasTrainingDifficulty"] = list(range(1, 11))
@@ -35,7 +35,7 @@ columns_names = ["hasName", "origin", "type", "hasFriendlyRating", "hasLifeSpan"
 data_columns_names = ["hasFriendlyRating", "hasLifeSpan", "hasSize", "needsHoursOfExercicePerDay", "hasIntelligenceRating", "hasHealthIssuesRisk", "hasAverageWeight", "hasTrainingDifficulty"]
 
 
-# In[3]:
+# In[ ]:
 
 
 def generate_dogs(n=50):

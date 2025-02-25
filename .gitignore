@@ -23,3 +23,4 @@ evaluation/dataset/*
 evaluation/KB/*
 *.txt
 *.ttl
+whc_result.csv

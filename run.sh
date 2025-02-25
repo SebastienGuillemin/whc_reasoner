@@ -26,7 +26,6 @@ then
     print_big_message "Creating dataset"
 
     cd evaluation
-    jupyter nbconvert --to script construct_dataset.ipynb
     python construct_dataset.py
     cd ..
 
