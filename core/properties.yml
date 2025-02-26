@@ -20,3 +20,4 @@ example:
 stups:
   save: true
   path: enriched_STUPS.ttl
+  explanations_path: explanations.txt

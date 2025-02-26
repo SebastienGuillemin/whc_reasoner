@@ -63,9 +63,6 @@ abstract class AbstractBinaryAtom extends BaseAtom implements BinaryAtom {
 
     @Override
     public int compareTo(Atom atomCompareTo) {
-        if (this.iri.equals(IRI.create(NamespacePrefix.SWRLB.toString() + "presentation"))) {
-            System.out.println("okok");
-        }
         if (atomCompareTo instanceof BuiltInAtom)
             if (((BuiltInAtom) atomCompareTo).allVariablesBound())
                 return 1;
@@ -88,20 +85,15 @@ abstract class AbstractBinaryAtom extends BaseAtom implements BinaryAtom {
         else {
             BinaryAtom binaryAtom = (BinaryAtom) atomCompareTo;
 
-            if (this.iri.equals(IRI.create(NamespacePrefix.SWRLB.toString() + "presentation"))) {
-                System.out.println(binaryAtom.getIRI());
-                System.out.println(this.iri.equals(atomCompareTo.getIRI()) && this.firstVariable.equals(binaryAtom.getFirstVariable()) && this.secondVariable.equals(binaryAtom.getSecondVariable()));
-            }
-
             if (this.iri.equals(atomCompareTo.getIRI()) && this.firstVariable.equals(binaryAtom.getFirstVariable()) && this.secondVariable.equals(binaryAtom.getSecondVariable()))
                 return 0;
 
             int thisAffectedVariables = (this.firstVariable.hasValue() ? 1 : 0) + (this.secondVariable.hasValue() ? 1 : 0);
             int otherAffectedVariables = (binaryAtom.getFirstVariable().hasValue() ? 1 : 0) + (binaryAtom.getSecondVariable().hasValue() ? 1 : 0);
 
-            if (thisAffectedVariables == otherAffectedVariables) return -1;
-
-            return otherAffectedVariables - thisAffectedVariables;
+            if (thisAffectedVariables <= otherAffectedVariables) return 1;
+            
+            return -1;
         }
     }
 

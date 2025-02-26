@@ -22,8 +22,6 @@ public class DiffValuesIn extends AbstractBuiltInAtom {
 
         float diff = MathUtil.computeDiffPercentage(value1, value2);
 
-        System.out.println(lowerBound + ", " + upperBound);
-
         return lowerBound <= diff && diff <= upperBound;
     }
 
@@ -36,9 +34,9 @@ public class DiffValuesIn extends AbstractBuiltInAtom {
 
         float diff = MathUtil.computeDiffPercentage(value1, value2);
 
-        System.out.println("Diff " + value1 + ", " + value2 + " = " + diff);
-
-        return "difference between " + value1 + " and " + value2 + " (" + diff + "%) in [" + lowerBound + "; " + upperBound + "]"; 
+        return "difference between " + this.variables.get(0).getIRI().getFragment() + "=" + value1 + " and "
+                + this.variables.get(1).getIRI().getFragment() + "=" + value2 + " (" + diff + ") in [" + lowerBound
+                + "; " + upperBound + "]";
     }
 
     @Override

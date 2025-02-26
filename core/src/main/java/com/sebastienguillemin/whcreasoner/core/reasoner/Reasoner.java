@@ -74,10 +74,14 @@ public class Reasoner {
     }
 
     public Set<OWLAxiom> triggerRules() throws VariableValueException, BindingManagerException, OWLAxiomConversionException {
-        return this.processRules(this.rules);
+        return this.processRules(this.rules, false);
     }
 
-    private Set<OWLAxiom> processRules(Set<Rule> rules) throws VariableValueException, BindingManagerException, OWLAxiomConversionException {
+    public Set<OWLAxiom> triggerRules(boolean irreflexiveHead) throws VariableValueException, BindingManagerException, OWLAxiomConversionException {
+        return this.processRules(this.rules, irreflexiveHead);
+    }
+
+    private Set<OWLAxiom> processRules(Set<Rule> rules, boolean irreflexiveHead) throws VariableValueException, BindingManagerException, OWLAxiomConversionException {
         if (rules.size() == 0)
             return new HashSet<>();
 
@@ -107,9 +111,10 @@ public class Reasoner {
                     ruleGoals.nextBinding();
 
                     // Skip if needed
-                    if (this.ontologyWrapper.alreadyInOntology(ruleHead)) {
+                    if (this.ontologyWrapper.alreadyInOntology(ruleHead) || (irreflexiveHead && ruleHead instanceof ObjectPropertyAtom && ((ObjectPropertyAtom)ruleHead).getFirstVariable().getValue().equals(((ObjectPropertyAtom)ruleHead).getSecondVariable().getValue()))) {
+                    // if (this.ontologyWrapper.alreadyInOntology(ruleHead)) {
                         skipped++;
-                        // Logger.logInference("####### SKIPPING " + ruleHead + "\n", 0);
+                        Logger.logInference("####### SKIPPING " + ruleHead + "\n", 0);
                         pb.step();
                         continue;
                     }
@@ -119,15 +124,22 @@ public class Reasoner {
 
                     // Adding inferred axioms to inferredAxiomsForCurrentRule
                     Set<Atom> causes = new HashSet<>();
-                    if (this.backwardChaining(new TreeSet<>(Arrays.asList(ruleHead)), 0, rule, 0, causes)) {
+                    // if (this.backwardChaining(new TreeSet<>(Arrays.asList(ruleHead)), 0, null, 0, causes)) {
+                    if (this.backwardChaining(new TreeSet<Atom>(rule.getBody()), 0, null, 0, causes)) {
                         inferredAxiom = ruleHead.toOWLAxiom();
+
                         Logger.logInference("####### Proven at this iteration : " + inferredAxiom, 0);
+
                         this.inferredAxioms.add(inferredAxiom);
                         this.satisfiedAtomCauses.put(ruleHead.copy(), causes);
+
                         inferredAxiomsForCurrentRule.add(inferredAxiom);
                     } else {
                         Logger.logInference("####### Nothing proven at the iteration.", 0);
                     }
+
+                    // Unbind rule variables
+                    rule.getBody().stream().forEach(a -> a.getVariables().stream().forEach(v -> v.unbind()));
 
                     pb.step();
                 }
@@ -154,7 +166,7 @@ public class Reasoner {
 
         // Recursive call
         Logger.logInfo("Rules to rerun : " + ruleToReprocess + "\n");
-        inferredAxioms.addAll(this.processRules(ruleToReprocess));
+        inferredAxioms.addAll(this.processRules(ruleToReprocess, irreflexiveHead));
         return inferredAxioms;
     }
 
@@ -180,7 +192,7 @@ public class Reasoner {
         Logger.skipLineInference();
         Logger.logInference("Goals : " + goals, depth);
 
-        // --- IF FIRST GOAL IS SATISFIED THEN PROVE FOR REMAINING GOALS
+        // --- IF FIRST GOAL IS SATISFIED THEN PROVE THE REMAINING GOALS
         Atom goal = goals.pollFirst();
         if (this.satisfied(goal)) {
             Logger.logInference("Satisfied : " + goal, depth);
@@ -202,7 +214,7 @@ public class Reasoner {
             variableSubstitutions.nextBinding();
             Logger.logInference("Binding variable in goal, becomes : " + goal + "(already satisfied)", depth);
 
-            // If remining goals are inferred
+            // If remining goals are proved
             if (this.backwardChaining(goals, weight, substRule, depth, causes)) {
                 causes.add(goal.copy());
                 return true;

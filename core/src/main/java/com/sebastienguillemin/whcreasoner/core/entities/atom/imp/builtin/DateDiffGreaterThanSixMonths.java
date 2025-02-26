@@ -26,7 +26,6 @@ public class DateDiffGreaterThanSixMonths extends AbstractBuiltInAtom {
 
     @Override
     public boolean isSatisfied() {
-        System.out.println(this.variables.size());
         OWLLiteral date1Str = (OWLLiteral) this.variables.get(0).getValue();
         OWLLiteral date2Str = (OWLLiteral) this.variables.get(1).getValue();
 

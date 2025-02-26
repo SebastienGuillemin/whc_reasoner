@@ -2,18 +2,17 @@
 
 function print_big_message {
     echo " "
-    echo "---------------------------------------------"
+    echo -e " \e[1;32m--------$1--------\e[0m"
     echo $1
-    echo "---------------------------------------------"
     echo " "
 
 }
 
-if [[ $# -eq 0 ]] || [[ "$1" = "stups" ]]
+if [[ $# -eq 0 ]] || [[ "$1" = "stups_evaluation" ]]
 then
     print_big_message "Running the stups batch inferrer program for Cannabis drug samples"
 
-    mvn clean install exec:java -Dexec.mainClass="com.sebastienguillemin.whcreasoner.stups.BatchInferrer" -f core/pom.xml -Dexec.args="KB.ttl forensic_rules.txt"
+    mvn clean install exec:java -Dexec.mainClass="com.sebastienguillemin.whcreasoner.stups.BatchInferrer" -f core/pom.xml -Dexec.args="./stups_evaluation/KB.ttl forensic_rules.txt"
 
 elif [[ "$1" = "example" ]]
 then
