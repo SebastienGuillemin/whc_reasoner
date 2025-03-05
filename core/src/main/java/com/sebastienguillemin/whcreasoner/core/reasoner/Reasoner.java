@@ -120,7 +120,7 @@ public class Reasoner {
                     }
 
                     // Try to prove hypothesis
-                    Logger.logInference("####### PROVING  " + ruleHead, 0);
+                    Logger.logInference("\n####### PROVING  " + ruleHead, 0);
 
                     // Adding inferred axioms to inferredAxiomsForCurrentRule
                     Set<Atom> causes = new HashSet<>();

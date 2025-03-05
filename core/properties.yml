@@ -15,7 +15,7 @@ example:
   kb: ./evaluation/KB/dogs_50.ttl
   save: true
   path: new_KB.ttl
-  displayInferredAxioms: True
+  displayInferredAxioms: true
 
 stups:
   save: true

@@ -2,7 +2,7 @@
 
 function print_big_message {
     echo " "
-    echo -e " \e[1;32m--------$1--------\e[0m"
+    echo -e "\e[1;32m--------$1--------\e[0m"
     echo $1
     echo " "
 
