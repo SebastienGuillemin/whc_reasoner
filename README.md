@@ -6,10 +6,13 @@ The following command can reconstruct the dog breed knowledge bases (KB). The re
 ./run.sh dataset
 ```
 
-Note that this command requires Python and Java (8 or above) to be installed. Moreover, the KB generation will also create CSV files in the folder [evaluation/dataset](evaluation/dataset/).
+Note that this command requires using Python 3.X and Java 8 (or above). Moreover, the KB generation will also create CSV files in the folder [evaluation/dataset](evaluation/dataset/).
 **KBs generation may take some time**
 
 The generation of KB is a two-stage process. First, CSV files are generated using Python script (see [this file](evaluation/README.md) for further information). Then, a [Java program](./core/src/main/java/com/sebastienguillemin/whcreasoner/dataset/ConstructKB.java) will convert each CSV file into a Turtle file (i.e., a KB).
+
+## WHC rules
+The WHC rules used during the evaluations are named *whc_1*, *whc_2*, and *whc_3* and are loaded from the [reasoner configuration file](https://github.com/SebastienGuillemin/whc_reasoner/blob/main/core/properties.yml).
 
 ## Running the quantitative evaluation
 You can run the quantitative evaluation using the following command.
@@ -38,3 +41,5 @@ You can run the SWRL benchmark using the following command.
 ```
 
 This command will produce the file "swrl_result.csv" (in the folder [swrl-benchmark](swrl-benchmark/)) containing the Drool engine performances per KB.
+
+The SWRL rules considered to run this benchmark are those obtained by removing the weights and threshold from *whc_1*, *whc_2*, and *whc_3*. These rules are directly written in the [Java program](https://github.com/SebastienGuillemin/whc_reasoner/blob/main/swrl-benchmark/src/main/java/com/sebastienguillemin/Benchmark.java) that runs the benchmark.
