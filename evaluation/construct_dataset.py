@@ -3,7 +3,6 @@
 
 # In[ ]:
 
-
 import pandas as pd
 import random
 import numpy as np
@@ -11,15 +10,16 @@ from pathlib import Path
 
 
 random.seed(0)
+np.random.seed(100)
 
 
-# In[ ]:
+# In[2]:
 
 
 column_values = {}
 
 column_values["hasHealthIssuesRisk"] = ["Low", "Moderate", "High"]
-column_values["hasSize"] = ["Small-Medium", "Medium", "Large", "Small", "Toy"]
+column_values["hasSize"] = ["Large", "Medium", "Small", "Toy"]
 
 column_values["hasFriendlyRating"] = list(range(1, 11))
 column_values["hasLifeSpan"] = list(range(5, 21))
@@ -28,7 +28,7 @@ column_values["hasTrainingDifficulty"] = list(range(1, 11))
 
 column_values["needsHoursOfExercicePerDay"] = np.linspace(0, 24, 49)
 
-column_values["origin"] = ["Germany", "Afghanistan", "England", "Japan", "USA", "Australia", "CentralAfrica", "France", "Scotland", "Switzerland"]
+column_values["origin"] = ["Germany", "England", "Australia", "France", "Switzerland"]
 column_values["type"] = ["Toy", "Hound", "Terrier", "Working", "Non-Sporting", "Herding", "Sporting", "Standard"]
 
 columns_names = ["hasName", "origin", "type", "hasFriendlyRating", "hasLifeSpan", "hasSize", "needsHoursOfExercicePerDay", "hasIntelligenceRating", "hasHealthIssuesRisk", "hasAverageWeight", "hasTrainingDifficulty"]
@@ -37,6 +37,22 @@ data_columns_names = ["hasFriendlyRating", "hasLifeSpan", "hasSize", "needsHours
 
 # In[ ]:
 
+
+def remove_per_cent_missing_data(dataframe, p=5.0):
+    # Calculate the number of values to remove
+    total_values = dataframe.size
+    num_values_to_remove = int(total_values * (p / 100.0))
+    # Flatten the subset DataFrame and get the index and column information
+    flattened_subset = dataframe.stack()
+
+    # Randomly select the indices (row, column) to remove
+    random_indices = np.random.choice(flattened_subset.index, size=num_values_to_remove, replace=False)
+
+    # Set the randomly selected values to NaN in the original DataFrame
+    for row, col in random_indices:
+        dataframe.at[row, col] = np.nan
+
+    return dataframe
 
 def generate_dogs(n=50):
     print(f"Generating {n} new dogs !")
@@ -70,16 +86,7 @@ def generate_dogs(n=50):
 
     df = pd.DataFrame(data=data, columns=columns_names)
 
-    i = 0
-    for col in data_columns_names:
-        if n == 50: # These conditions ensures that 5% of the cells are None when n = 50
-            if i < 4:
-                df.loc[df.sample(frac=0.02, random_state=42).index, col] = None
-            if i >= 4:
-                df.loc[df.sample(frac=0.08, random_state=42).index, col] = None 
-            i += 1
-        else:
-            df.loc[df.sample(frac=0.05, random_state=42).index, col] = None 
+    df[data_columns_names] = remove_per_cent_missing_data(df[data_columns_names])
         
         
     return df

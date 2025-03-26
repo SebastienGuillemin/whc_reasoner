@@ -50,7 +50,7 @@ elif [[ "$1" = "qualitative_evaluation" ]]
 then
     print_big_message "Running qualitative evaluation"
 
-    declare -a KBs=("./evaluation/KB/dogs_50.ttl" "./evaluation/KB/dogs_100.ttl" "./evaluation/KB/dogs_200.ttl")
+    declare -a KBs=("./evaluation/KB/dogs_50.ttl" "./evaluation/KB/dogs_100.ttl" "./evaluation/KB/dogs_200.ttl" "./evaluation/KB/dogs_400.ttl" "./evaluation/KB/dogs_800.ttl")
 
     mvn clean install -f core/pom.xml
     for kb in "${KBs[@]}"

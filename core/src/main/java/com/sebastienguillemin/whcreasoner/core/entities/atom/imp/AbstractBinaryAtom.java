@@ -6,7 +6,6 @@ import java.util.Set;
 import org.semanticweb.owlapi.model.IRI;
 
 import com.google.common.collect.Sets;
-import com.sebastienguillemin.whcreasoner.core.entities.NamespacePrefix;
 import com.sebastienguillemin.whcreasoner.core.entities.atom.Atom;
 import com.sebastienguillemin.whcreasoner.core.entities.atom.BinaryAtom;
 import com.sebastienguillemin.whcreasoner.core.entities.atom.BuiltInAtom;

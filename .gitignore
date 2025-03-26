@@ -24,4 +24,5 @@ evaluation/KB/*
 stups_evaluation/dataset/*
 *.txt
 *.ttl
-whc_result.csv
+*.csv
+swrl-benchmark/*.csv
