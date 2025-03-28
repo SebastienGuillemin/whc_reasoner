@@ -15,7 +15,7 @@ import com.sebastienguillemin.util.CSVUtil;
 
 public class Benchmark {
     private static final IRI otterhoundIRI = IRI.create("http://www.sebastienguillemin.com/dogs#Otterhound");
-    private static final IRI englishFoxhoundIRI = IRI.create("http://www.sebastienguillemin.com/dogs#:EnglishFoxhound");
+    private static final IRI englishFoxhoundIRI = IRI.create("http://www.sebastienguillemin.com/dogs#EnglishFoxhound");
     private static final IRI toyIRI = IRI.create("http://www.sebastienguillemin.com/dogs#Toy");
         
     private static void printFramedMessage(String message) {

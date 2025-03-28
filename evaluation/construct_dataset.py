@@ -32,7 +32,7 @@ column_values["origin"] = ["Germany", "England", "Australia", "France", "Switzer
 column_values["type"] = ["Toy", "Hound", "Terrier", "Working", "Non-Sporting", "Herding", "Sporting", "Standard"]
 
 columns_names = ["hasName", "origin", "type", "hasFriendlyRating", "hasLifeSpan", "hasSize", "needsHoursOfExercicePerDay", "hasIntelligenceRating", "hasHealthIssuesRisk", "hasAverageWeight", "hasTrainingDifficulty"]
-data_columns_names = ["hasFriendlyRating", "hasLifeSpan", "hasSize", "needsHoursOfExercicePerDay", "hasIntelligenceRating", "hasHealthIssuesRisk", "hasAverageWeight", "hasTrainingDifficulty"]
+data_columns_names = ["origin", "type", "hasFriendlyRating", "hasLifeSpan", "hasSize", "needsHoursOfExercicePerDay", "hasIntelligenceRating", "hasHealthIssuesRisk", "hasAverageWeight", "hasTrainingDifficulty"]
 
 
 # In[ ]:
@@ -42,6 +42,7 @@ def remove_per_cent_missing_data(dataframe, p=5.0):
     # Calculate the number of values to remove
     total_values = dataframe.size
     num_values_to_remove = int(total_values * (p / 100.0))
+
     # Flatten the subset DataFrame and get the index and column information
     flattened_subset = dataframe.stack()
 
@@ -106,7 +107,7 @@ for i in range(14):
     missing_values = dog_df.isnull().sum().sum()
 
     dog_df.to_csv(f"./dataset/dogs_{n}.csv")
-    print(f"{n} dogs generated and saved in file dogs_{n}.csv. Missing values : {missing_values} ({100 * missing_values / (n * 8)}%)")
+    print(f"{n} dogs generated and saved in file dogs_{n}.csv. Missing values : {missing_values} ({100 * missing_values / (n * 10)}%)")
     print()
 
     n *= 2

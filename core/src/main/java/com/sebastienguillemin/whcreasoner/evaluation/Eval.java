@@ -59,6 +59,8 @@ public class Eval {
         String row = KBPath + ", " + (stop - start) + ", " + reasoner.addingInferredAxiomsTime + ", " + inferredAxioms.size() + ", ";
         row += inferredAxiomsPerRule.get(WHC_1_IRI) + ", " + inferredAxiomsPerRule.get(WHC_2_IRI) + ", " + inferredAxiomsPerRule.get(WHC_3_IRI);
 
+        System.out.println("Skipped : " + Reasoner.skipped);
+
         CSVUtil.addToCSV("whc_result.csv",row);
 
         if (saveInferredAxioms) {
