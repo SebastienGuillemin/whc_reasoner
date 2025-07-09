@@ -5,23 +5,33 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @base <http://www.sebastienguillemin.com/dogs#> .
+
 <http://www.sebastienguillemin.com/dogs> rdf:type owl:Ontology .
+
 #################################################################
 #    Object Properties
 #################################################################
+
 ###  http://www.sebastienguillemin.com/dogs#origin
 :origin rdf:type owl:ObjectProperty .
+
+
 #################################################################
 #    Data properties
 #################################################################
+
 ###  http://www.sebastienguillemin.com/dogs#hasAverageWeight
 :hasAverageWeight rdf:type owl:DatatypeProperty ;
                   rdfs:domain :Dog ;
                   rdfs:range xsd:float .
+
+
 ###  http://www.sebastienguillemin.com/dogs#hasFriendlyRating
 :hasFriendlyRating rdf:type owl:DatatypeProperty ;
                    rdfs:domain :Dog ;
                    rdfs:range xsd:integer .
+
+
 ###  http://www.sebastienguillemin.com/dogs#hasHealthIssuesRisk
 :hasHealthIssuesRisk rdf:type owl:DatatypeProperty ;
                      rdfs:domain :Dog ;
@@ -37,18 +47,26 @@
                                                        ]
                                             ]
                                 ] .
+
+
 ###  http://www.sebastienguillemin.com/dogs#hasIntelligenceRating
 :hasIntelligenceRating rdf:type owl:DatatypeProperty ;
                        rdfs:domain :Dog ;
                        rdfs:range xsd:integer .
+
+
 ###  http://www.sebastienguillemin.com/dogs#hasLifeSpan
 :hasLifeSpan rdf:type owl:DatatypeProperty ;
              rdfs:domain :Dog ;
              rdfs:range xsd:integer .
+
+
 ###  http://www.sebastienguillemin.com/dogs#hasName
 :hasName rdf:type owl:DatatypeProperty ;
          rdfs:domain :Dog ;
          rdfs:range xsd:string .
+
+
 ###  http://www.sebastienguillemin.com/dogs#hasSize
 :hasSize rdf:type owl:DatatypeProperty ;
          rdfs:domain :Dog ;
@@ -70,94 +88,218 @@
                                            ]
                                 ]
                     ] .
+
+
 ###  http://www.sebastienguillemin.com/dogs#hasTrainingDifficulty
 :hasTrainingDifficulty rdf:type owl:DatatypeProperty ;
                        rdfs:domain :Dog ;
                        rdfs:range xsd:integer .
+
+
 ###  http://www.sebastienguillemin.com/dogs#needsHoursOfExercicePerDay
 :needsHoursOfExercicePerDay rdf:type owl:DatatypeProperty ;
                             rdfs:domain :Dog ;
                             rdfs:range xsd:float .
+
+
 #################################################################
 #    Classes
 #################################################################
+
 ###  http://www.sebastienguillemin.com/dogs#Beagle
 :Beagle rdf:type owl:Class ;
         rdfs:subClassOf :Breed .
+
+
 ###  http://www.sebastienguillemin.com/dogs#Breed
 :Breed rdf:type owl:Class .
+
+
 ###  http://www.sebastienguillemin.com/dogs#Country
 :Country rdf:type owl:Class .
+
+
 ###  http://www.sebastienguillemin.com/dogs#Dog
-:Dog rdf:type owl:Class .
+:Dog rdf:type owl:Class ;
+     owl:equivalentClass [ owl:intersectionOf ( [ rdf:type owl:Restriction ;
+                                                  owl:onProperty :origin ;
+                                                  owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                                                  owl:onClass :Country
+                                                ]
+                                                [ rdf:type owl:Restriction ;
+                                                  owl:onProperty :hasAverageWeight ;
+                                                  owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                                                  owl:onDataRange xsd:float
+                                                ]
+                                                [ rdf:type owl:Restriction ;
+                                                  owl:onProperty :hasFriendlyRating ;
+                                                  owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                                                  owl:onDataRange xsd:integer
+                                                ]
+                                                [ rdf:type owl:Restriction ;
+                                                  owl:onProperty :hasHealthIssuesRisk ;
+                                                  owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                                                  owl:onDataRange [ rdf:type rdfs:Datatype ;
+                                                                    owl:oneOf [ rdf:type rdf:List ;
+                                                                                rdf:first "High" ;
+                                                                                rdf:rest [ rdf:type rdf:List ;
+                                                                                           rdf:first "Low" ;
+                                                                                           rdf:rest [ rdf:type rdf:List ;
+                                                                                                      rdf:first "Moderate" ;
+                                                                                                      rdf:rest rdf:nil
+                                                                                                    ]
+                                                                                         ]
+                                                                              ]
+                                                                  ]
+                                                ]
+                                                [ rdf:type owl:Restriction ;
+                                                  owl:onProperty :hasIntelligenceRating ;
+                                                  owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                                                  owl:onDataRange xsd:integer
+                                                ]
+                                                [ rdf:type owl:Restriction ;
+                                                  owl:onProperty :hasLifeSpan ;
+                                                  owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                                                  owl:onDataRange xsd:integer
+                                                ]
+                                                [ rdf:type owl:Restriction ;
+                                                  owl:onProperty :hasName ;
+                                                  owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                                                  owl:onDataRange xsd:string
+                                                ]
+                                                [ rdf:type owl:Restriction ;
+                                                  owl:onProperty :hasSize ;
+                                                  owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                                                  owl:onDataRange [ rdf:type rdfs:Datatype ;
+                                                                    owl:oneOf [ rdf:type rdf:List ;
+                                                                                rdf:first "Large" ;
+                                                                                rdf:rest [ rdf:type rdf:List ;
+                                                                                           rdf:first "Medium" ;
+                                                                                           rdf:rest [ rdf:type rdf:List ;
+                                                                                                      rdf:first "Small" ;
+                                                                                                      rdf:rest [ rdf:type rdf:List ;
+                                                                                                                 rdf:first "Small-Medium" ;
+                                                                                                                 rdf:rest [ rdf:type rdf:List ;
+                                                                                                                            rdf:first "Toy" ;
+                                                                                                                            rdf:rest rdf:nil
+                                                                                                                          ]
+                                                                                                               ]
+                                                                                                    ]
+                                                                                         ]
+                                                                              ]
+                                                                  ]
+                                                ]
+                                                [ rdf:type owl:Restriction ;
+                                                  owl:onProperty :hasTrainingDifficulty ;
+                                                  owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                                                  owl:onDataRange xsd:integer
+                                                ]
+                                                [ rdf:type owl:Restriction ;
+                                                  owl:onProperty :needsHoursOfExercicePerDay ;
+                                                  owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                                                  owl:onDataRange xsd:float
+                                                ]
+                                              ) ;
+                           rdf:type owl:Class
+                         ] .
+
+
 ###  http://www.sebastienguillemin.com/dogs#EnglishFoxhound
 :EnglishFoxhound rdf:type owl:Class ;
                  rdfs:subClassOf :Breed .
+
+
 ###  http://www.sebastienguillemin.com/dogs#Harrier
 :Harrier rdf:type owl:Class ;
          rdfs:subClassOf :Breed .
+
+
 ###  http://www.sebastienguillemin.com/dogs#Hound
 :Hound rdf:type owl:Class ;
        rdfs:subClassOf :Type .
+
+
 ###  http://www.sebastienguillemin.com/dogs#Otterhound
 :Otterhound rdf:type owl:Class ;
             rdfs:subClassOf :Breed .
+
+
 ###  http://www.sebastienguillemin.com/dogs#Papillon
 :Papillon rdf:type owl:Class ;
           rdfs:subClassOf :Breed .
+
+
 ###  http://www.sebastienguillemin.com/dogs#Poodle
 :Poodle rdf:type owl:Class ;
         rdfs:subClassOf :Breed .
+
+
 ###  http://www.sebastienguillemin.com/dogs#Toy
 :Toy rdf:type owl:Class ;
      rdfs:subClassOf :Type .
+
+
 ###  http://www.sebastienguillemin.com/dogs#Type
 :Type rdf:type owl:Class .
+
+
 ###  http://www.sebastienguillemin.com/dogs#Whippet
 :Whippet rdf:type owl:Class ;
          rdfs:subClassOf :Breed .
+
+
 #################################################################
 #    Individuals
 #################################################################
 
-
-###  http://www.sebastienguillemin.com/dogs#Germany
-:Germany rdf:type owl:NamedIndividual ,
-                 :Country .
-
 ###  http://www.sebastienguillemin.com/dogs#Afghanistan
 :Afghanistan rdf:type owl:NamedIndividual ,
-                 :Country .
+                      :Country .
 
-###  http://www.sebastienguillemin.com/dogs#England
-:England rdf:type owl:NamedIndividual ,
-                 :Country .
-
-###  http://www.sebastienguillemin.com/dogs#Japan
-:Japan rdf:type owl:NamedIndividual ,
-                 :Country .
-
-###  http://www.sebastienguillemin.com/dogs#USA
-:USA rdf:type owl:NamedIndividual ,
-                 :Country .
 
 ###  http://www.sebastienguillemin.com/dogs#Australia
 :Australia rdf:type owl:NamedIndividual ,
-                 :Country .
+                    :Country .
+
 
 ###  http://www.sebastienguillemin.com/dogs#CentralAfrica
 :CentralAfrica rdf:type owl:NamedIndividual ,
-                 :Country .
+                        :Country .
+
+
+###  http://www.sebastienguillemin.com/dogs#England
+:England rdf:type owl:NamedIndividual ,
+                  :Country .
+
 
 ###  http://www.sebastienguillemin.com/dogs#France
 :France rdf:type owl:NamedIndividual ,
                  :Country .
 
+
+###  http://www.sebastienguillemin.com/dogs#Germany
+:Germany rdf:type owl:NamedIndividual ,
+                  :Country .
+
+
+###  http://www.sebastienguillemin.com/dogs#Japan
+:Japan rdf:type owl:NamedIndividual ,
+                :Country .
+
+
 ###  http://www.sebastienguillemin.com/dogs#Scotland
 :Scotland rdf:type owl:NamedIndividual ,
-                 :Country .
+                   :Country .
+
 
 ###  http://www.sebastienguillemin.com/dogs#Switzerland
 :Switzerland rdf:type owl:NamedIndividual ,
-                 :Country .
+                      :Country .
+
+
+###  http://www.sebastienguillemin.com/dogs#USA
+:USA rdf:type owl:NamedIndividual ,
+              :Country .
+
+
 ###  Generated by the OWL API (version 4.5.26.2023-07-17T20:34:13Z) https://github.com/owlcs/owlapi
