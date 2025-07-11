@@ -22,13 +22,19 @@ public class Eval {
     private static IRI WHC_1_IRI = IRI.create("http://www.sebastienguillemin.com/dogs#whc_1");
     private static IRI WHC_2_IRI = IRI.create("http://www.sebastienguillemin.com/dogs#whc_2");
     private static IRI WHC_3_IRI = IRI.create("http://www.sebastienguillemin.com/dogs#whc_3");
+    private static IRI STUPS_RULE = IRI.create("http://www.sebastienguillemin.com/dogs#stups_rule");
 
     public static void main(String[] args) throws Exception {
-        String KBPath = args[0];
+        if (args.length < 3)
+            throw new Exception("Need at least two arguments : 'KBPath', 'STUPS_evaluation' and 'saveInferredAxioms' .");
 
-        boolean saveInferredAxioms = false;
-        if (args.length > 1)
-            saveInferredAxioms = args[1].equals("save_inferred_axioms");
+        String KBPath = args[0];
+        boolean STUPS_evaluation = args[1].equals("stups_evaluation");
+        boolean saveInferredAxioms = args[2].equals("save_inferred_axioms");
+  
+
+        Long start, stop;
+        Set<OWLAxiom> inferredAxioms;
 
         OntologyParser ontologyParser = new OntologyParser();
 
@@ -40,28 +46,43 @@ public class Eval {
         Reasoner reasoner = new Reasoner(ontologyWrapper);
         RuleParser parser = new RuleParser(ontologyWrapper);
 
-        Rule whc1 = parser.parseRule("whc_1", propertiesReader.getPropertyValue("rules.whc_1"));
-        Rule whc2 = parser.parseRule("whc_2", propertiesReader.getPropertyValue("rules.whc_2"));
-        Rule whc3 = parser.parseRule("whc_3", propertiesReader.getPropertyValue("rules.whc_3"));
-        reasoner.addRule(whc1);
-        reasoner.addRule(whc2);
-        reasoner.addRule(whc3);
-
-        Long start, stop;
-        start = System.currentTimeMillis();
-        Set<OWLAxiom> inferredAxioms = reasoner.triggerRules();
-        stop = System.currentTimeMillis();
+        if (!STUPS_evaluation) {
+            Rule whc1 = parser.parseRule("whc_1", propertiesReader.getPropertyValue("rules.whc_1"));
+            Rule whc2 = parser.parseRule("whc_2", propertiesReader.getPropertyValue("rules.whc_2"));
+            Rule whc3 = parser.parseRule("whc_3", propertiesReader.getPropertyValue("rules.whc_3"));
+            reasoner.addRule(whc1);
+            reasoner.addRule(whc2);
+            reasoner.addRule(whc3);
+            start = System.currentTimeMillis();
+            inferredAxioms = reasoner.triggerRules();
+            stop = System.currentTimeMillis();
+        }
+        else {
+            Rule stups_rule = parser.parseRule("stups_rule", propertiesReader.getPropertyValue("rules.stups.lot_cannabis"));
+            reasoner.addRule(stups_rule);
+            start = System.currentTimeMillis();
+            inferredAxioms = reasoner.triggerRules(true, true, true);
+            stop = System.currentTimeMillis();
+        }
 
         System.out.println();
 
         Hashtable<IRI, Integer> inferredAxiomsPerRule = reasoner.getInferredAxiomsPerRule();
 
         String row = KBPath + ", " + (stop - start) + ", " + reasoner.addingInferredAxiomsTime + ", " + inferredAxioms.size() + ", ";
-        row += inferredAxiomsPerRule.get(WHC_1_IRI) + ", " + inferredAxiomsPerRule.get(WHC_2_IRI) + ", " + inferredAxiomsPerRule.get(WHC_3_IRI);
+
+        if (!STUPS_evaluation)
+            row += inferredAxiomsPerRule.get(WHC_1_IRI) + ", " + inferredAxiomsPerRule.get(WHC_2_IRI) + ", " + inferredAxiomsPerRule.get(WHC_3_IRI);
+        else
+            row += inferredAxiomsPerRule.get(STUPS_RULE);
+
 
         System.out.println("Skipped : " + Reasoner.skipped);
 
-        CSVUtil.addToCSV("whc_result.csv",row);
+        if (!STUPS_evaluation)
+            CSVUtil.addToCSV("whc_result_dogs.csv",row);
+        else
+            CSVUtil.addToCSV("whc_result_stups.csv",row);
 
         if (saveInferredAxioms) {
             String KBBasename = KBPath.split("/")[3].split("\\.")[0];

@@ -9,9 +9,15 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
+import org.apache.solr.common.util.Hash;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLLiteral;
+import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
+import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
+import org.semanticweb.owlapi.model.OWLProperty;
+import org.semanticweb.owlapi.model.OWLPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLPropertyAssertionObject;
 
 import com.sebastienguillemin.whcreasoner.core.entities.OntologyWrapper;
@@ -32,6 +38,7 @@ import com.sebastienguillemin.whcreasoner.core.exception.VariableValueException;
 import com.sebastienguillemin.whcreasoner.core.util.Logger;
 import lombok.Getter;
 import me.tongfei.progressbar.ProgressBar;
+import uk.ac.manchester.cs.owl.owlapi.OWLObjectPropertyAssertionAxiomImpl;
 
 // TODO : l'affichage de la règle en train d'ête exécutée semble ne pas correspondre à celle qui l'est vraiment
 public class Reasoner {
@@ -75,15 +82,15 @@ public class Reasoner {
 
     public Set<OWLAxiom> triggerRules()
             throws VariableValueException, BindingManagerException, OWLAxiomConversionException {
-        return this.processRules(this.rules, false);
+        return this.processRules(this.rules, false, false, false);
     }
 
-    public Set<OWLAxiom> triggerRules(boolean irreflexiveHead)
+    public Set<OWLAxiom> triggerRules(boolean irreflexiveHead, boolean symmetricHead, boolean transitiveHead)
             throws VariableValueException, BindingManagerException, OWLAxiomConversionException {
-        return this.processRules(this.rules, irreflexiveHead);
+        return this.processRules(this.rules, irreflexiveHead, symmetricHead, transitiveHead);
     }
 
-    private Set<OWLAxiom> processRules(Set<Rule> rules, boolean irreflexiveHead)
+    private Set<OWLAxiom> processRules(Set<Rule> rules, boolean irreflexiveHead, boolean symmetricHead, boolean transitiveHead)
             throws VariableValueException, BindingManagerException, OWLAxiomConversionException {
         if (rules.size() == 0)
             return new HashSet<>();
@@ -104,21 +111,37 @@ public class Reasoner {
 
             // Find hypotheses
             Atom ruleHead = rule.getHead();
-            OWLAxiom inferredAxiom;
+            OWLAxiom ruleHeadAxiom, symmetricRuleHeadAxiom = null;
+            Set<OWLAxiom> triedToProveAxioms = new HashSet<>();
             BindingManager ruleGoals = new BindingManager(this.findGoals(ruleHead));
             try (ProgressBar pb = new ProgressBar(String.format("[Reasoner] Testing %s hypothesis for rule '%s'", ruleGoals.getTotalIter(), rule.getIRI().getFragment()), ruleGoals.getTotalIter())) {
                 // Process each hypothesis
                 while (ruleGoals.hasNextBinding()) {
                     ruleGoals.nextBinding();
+                    ruleHeadAxiom = ruleHead.toOWLAxiom();
 
-                    // Skip if needed (for time optimisation only)
-                    // if (this.ontologyWrapper.alreadyInOntology(ruleHead) || (irreflexiveHead && ruleHead instanceof ObjectPropertyAtom && ((ObjectPropertyAtom) ruleHead).getFirstVariable().getValue().equals(((ObjectPropertyAtom) ruleHead).getSecondVariable().getValue()))) {
-                    // if (this.ontologyWrapper.alreadyInOntology(ruleHead)) {
-                    //     skipped++;
-                    //     Logger.logInference("####### SKIPPING " + ruleHead + "\n", 0);
-                    //     pb.step();
-                    //     continue;
-                    // }
+                    if (triedToProveAxioms.contains(ruleHeadAxiom)) {
+                        skipped++;
+                        pb.step();
+                        continue;
+                    }
+                    if (irreflexiveHead) {
+                        OWLObjectPropertyAssertionAxiom ruleHeadAxiomAsProperty = (OWLObjectPropertyAssertionAxiom) ruleHeadAxiom;
+                        OWLIndividual subject = ruleHeadAxiomAsProperty.getSubject();
+                        OWLIndividual object  = ruleHeadAxiomAsProperty.getObject();
+                        if (subject.equals(object)) {
+                            triedToProveAxioms.add(ruleHeadAxiom);
+                            skipped++;
+                            pb.step();
+                            continue; 
+                        }
+                    }
+
+                    triedToProveAxioms.add(ruleHeadAxiom);
+                    if (symmetricHead) {
+                        symmetricRuleHeadAxiom = ruleHead.toSymmetricOWLAxiom();
+                        triedToProveAxioms.add(symmetricRuleHeadAxiom);
+                    }
 
                     // Try to prove hypothesis
                     Logger.logInference("\n####### PROVING  " + ruleHead, 0);
@@ -127,15 +150,51 @@ public class Reasoner {
                     Set<Atom> causes = new HashSet<>();
                     // if (this.backwardChaining(new TreeSet<>(Arrays.asList(ruleHead)), 0, null, 0,
                     // causes)) {
+
                     if (this.backwardChaining(new TreeSet<Atom>(rule.getBody()), 0, null, 0, causes)) {
-                        inferredAxiom = ruleHead.toOWLAxiom();
 
-                        Logger.logInference("####### Proven at this iteration : " + inferredAxiom, 0);
+                        Logger.logInference("####### Proven at this iteration : " + ruleHeadAxiom, 0);
 
-                        this.inferredAxioms.add(inferredAxiom);
+                        this.inferredAxioms.add(ruleHeadAxiom);
                         this.satisfiedAtomCauses.put(ruleHead.copy(), causes);
+                        inferredAxiomsForCurrentRule.add(ruleHeadAxiom);
 
-                        inferredAxiomsForCurrentRule.add(inferredAxiom);
+                        if (symmetricHead) {
+                            this.inferredAxioms.add(symmetricRuleHeadAxiom);
+                            inferredAxiomsForCurrentRule.add(symmetricRuleHeadAxiom);
+                        }
+                        if (transitiveHead) {
+                            OWLObjectPropertyAssertionAxiom ruleHeadAxiomAsProperty = (OWLObjectPropertyAssertionAxiom) ruleHeadAxiom;
+                            OWLObjectPropertyExpression property = ruleHeadAxiomAsProperty.getProperty();
+                            OWLIndividual subject = ruleHeadAxiomAsProperty.getSubject();
+                            OWLIndividual object  = ruleHeadAxiomAsProperty.getObject();
+                            HashSet<OWLAxiom> toAdd = new HashSet<>();
+
+                            for (OWLAxiom axiom : this.inferredAxioms) {
+                                OWLObjectPropertyAssertionAxiom temp = (OWLObjectPropertyAssertionAxiom) axiom;
+                                if (!temp.getProperty().equals(property))
+                                    continue;
+                                if (subject.equals(temp.getSubject())) {
+                                    toAdd.add(new OWLObjectPropertyAssertionAxiomImpl(object, property,  temp.getObject(), new HashSet<>()));
+                                    toAdd.add(new OWLObjectPropertyAssertionAxiomImpl(temp.getObject(), property,  object, new HashSet<>()));
+                                }
+                                if (object.equals(temp.getObject())) {
+                                    toAdd.add(new OWLObjectPropertyAssertionAxiomImpl(subject, property,  temp.getSubject(), new HashSet<>()));
+                                    toAdd.add(new OWLObjectPropertyAssertionAxiomImpl(temp.getSubject(), property,  subject, new HashSet<>()));
+                                }
+                                if (object.equals(temp.getSubject())) {
+                                    toAdd.add(new OWLObjectPropertyAssertionAxiomImpl(subject, property,  temp.getObject(), new HashSet<>()));
+                                    toAdd.add(new OWLObjectPropertyAssertionAxiomImpl(temp.getObject(), property,  subject, new HashSet<>()));
+                                }
+                                if (subject.equals(temp.getObject())) {
+                                    toAdd.add(new OWLObjectPropertyAssertionAxiomImpl(object, property,  temp.getSubject(), new HashSet<>()));
+                                    toAdd.add(new OWLObjectPropertyAssertionAxiomImpl(temp.getSubject(), property,  object, new HashSet<>()));
+                                }
+                            }
+                            this.inferredAxioms.addAll(toAdd);
+                            inferredAxiomsForCurrentRule.addAll(toAdd);
+                            triedToProveAxioms.addAll(toAdd);
+                        }
                     } else {
                         Logger.logInference("####### Nothing proven at the iteration.", 0);
                     }
@@ -167,7 +226,7 @@ public class Reasoner {
 
         // Recursive call
         Logger.logInfo("Rules to rerun : " + ruleToReprocess + "\n");
-        this.inferredAxioms.addAll(this.processRules(ruleToReprocess, irreflexiveHead));
+        this.inferredAxioms.addAll(this.processRules(ruleToReprocess, irreflexiveHead, symmetricHead, transitiveHead));
         
         return this.inferredAxioms;
     }
@@ -324,7 +383,7 @@ public class Reasoner {
                     this.ontologyWrapper.getObjectPropertiesDomains().get(binaryAtom.getIRI()).stream()
                     .flatMap(d -> d.nestedClassExpressions())
                     .flatMap(c ->
-                    this.ontologyWrapper.getIndividualsOfClass(c.asOWLClass().getIRI()).stream())
+                        this.ontologyWrapper.getIndividualsOfClass(c.asOWLClass().getIRI()).stream())
                     .collect(Collectors.toSet());
 
                 if (values.size() == 0) {

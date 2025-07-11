@@ -57,7 +57,7 @@ public class BatchInferrer {
         }
 
         // Infer
-        reasoner.triggerRules(true);
+        reasoner.triggerRules(true, true, true);
         Logger.logInfo("Count of inferred axioms: " + reasoner.getInferredAxioms().size());
 
         // Save KB
