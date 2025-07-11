@@ -9,15 +9,12 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
-import org.apache.solr.common.util.Hash;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
-import org.semanticweb.owlapi.model.OWLProperty;
-import org.semanticweb.owlapi.model.OWLPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLPropertyAssertionObject;
 
 import com.sebastienguillemin.whcreasoner.core.entities.OntologyWrapper;
@@ -36,6 +33,7 @@ import com.sebastienguillemin.whcreasoner.core.exception.InvalidRuleException;
 import com.sebastienguillemin.whcreasoner.core.exception.OWLAxiomConversionException;
 import com.sebastienguillemin.whcreasoner.core.exception.VariableValueException;
 import com.sebastienguillemin.whcreasoner.core.util.Logger;
+
 import lombok.Getter;
 import me.tongfei.progressbar.ProgressBar;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectPropertyAssertionAxiomImpl;
